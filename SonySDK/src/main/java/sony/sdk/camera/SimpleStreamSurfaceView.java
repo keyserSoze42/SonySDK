@@ -2,10 +2,10 @@
  * Copyright 2014 Sony Corporation
  */
 
-package com.example.sony.cameraremote;
+package sony.sdk.camera;
 
-import com.example.sony.cameraremote.utils.SimpleLiveviewSlicer;
-import com.example.sony.cameraremote.utils.SimpleLiveviewSlicer.Payload;
+import sony.sdk.camera.utils.SimpleLiveviewSlicer;
+import sony.sdk.camera.utils.SimpleLiveviewSlicer.Payload;
 
 import android.annotation.TargetApi;
 import android.content.Context;

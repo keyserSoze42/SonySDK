@@ -2,7 +2,7 @@
  * Copyright 2014 Sony Corporation
  */
 
-package com.example.sony.cameraremote;
+package sony.sdk.camera;
 
 import org.json.JSONArray;
 import org.json.JSONException;

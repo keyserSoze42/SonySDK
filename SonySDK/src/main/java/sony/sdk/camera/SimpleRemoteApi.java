@@ -2,10 +2,10 @@
  * Copyright 2014 Sony Corporation
  */
 
-package com.example.sony.cameraremote;
+package sony.sdk.camera;
 
-import com.example.sony.cameraremote.ServerDevice.ApiService;
-import com.example.sony.cameraremote.utils.SimpleHttpClient;
+import sony.sdk.camera.ServerDevice.ApiService;
+import sony.sdk.camera.utils.SimpleHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
