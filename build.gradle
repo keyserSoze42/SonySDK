@@ -13,3 +13,16 @@ allprojects {
         jcenter()
     }
 }
+
+subprojects {
+    project.plugins.withType(JavaPlugin) {
+        task buildJavadoc(type: Javadoc) {
+            source = sourceSets.main.java.srcDirs
+            destinationDir = file("build/docs/javadoc/")
+            javadoc.destinationDir = file("${project.buildDir}/docs/javadoc/")
+            javadoc.classpath += files(System.getenv("ANDROID_HOME") + "/platforms/android-19/android.jar")
+
+        }
+        assemble.finalizedBy buildJavadoc
+    }
+}
