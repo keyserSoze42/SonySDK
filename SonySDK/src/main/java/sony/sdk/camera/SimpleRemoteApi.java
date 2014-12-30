@@ -1120,14 +1120,6 @@ public class SimpleRemoteApi {
      * </pre>
      *
      * @return JSON data of response: responseJson(int, obj):
-     * "result": [
-     * 0 success 1 failure,
-     * {
-     * "AFResult": true,
-     * "AFType": "Touch", "Wide"
-     * }
-     * ],
-     * "id": 1
      * Touch: Focus on around touch area
      * Wide: Focus on over a wide range including touch area
      * @throws IOException all errors and exception are wrapped by this
@@ -1168,10 +1160,6 @@ public class SimpleRemoteApi {
      * </pre>
      *
      * @return JSON data of response: responseJson(int, obj):
-     * "result": [
-     * { "set": true, "touchCoordinates":[] }
-     * ],
-     * "id": 1
      * touchCoordinates is reserved and will return empty
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
@@ -1351,11 +1339,6 @@ public class SimpleRemoteApi {
      * </pre>
      *
      * @return JSONObject - returns Current time setting and available time settings
-     * "result": [
-     * 0,
-     * [0,2,10]
-     * ],
-     * "id": 1
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
@@ -1419,10 +1402,8 @@ public class SimpleRemoteApi {
             throw new IOException(e);
         }
     }
-
     /**
-     * Calls getExposureMode API to the target server. returns the current Exposure Mode
-
+     * Calls getExposureMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1434,7 +1415,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Exposure Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1457,8 +1438,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedExposureMode API to the target server. returns supported Exposure Mode
-
+     * Calls getSupportedExposureMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1470,7 +1450,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Exposure Modes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1493,8 +1473,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableExposureMode API to the target server. returns the current and available Available Exposure Mode
-
+     * Calls getAvailableExposureMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1506,7 +1485,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Exposure Mode and a list of the supported Exposure Modes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1529,8 +1508,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setFocusMode API to the target server. Sets the current Focus Mode
-
+     * Calls setFocusMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1542,7 +1520,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Focus Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1565,8 +1543,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getFocusMode API to the target server. returns the current Focus Mode
-
+     * Calls getFocusMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1578,7 +1555,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Focus Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1601,8 +1578,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedFocusMode API to the target server. returns supported Focus Mode
-
+     * Calls getSupportedFocusMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1614,7 +1590,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Focus Modes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1637,8 +1613,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableFocusMode API to the target server. returns the current and available Available Focus Mode
-
+     * Calls getAvailableFocusMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1650,7 +1625,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Focus Mode and a list of the supported Focus Modes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1673,8 +1648,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setExposureCompensation API to the target server. Sets the current Exposure Compensation
-
+     * Calls setExposureCompensation API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1686,7 +1660,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Exposure Compensation
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1709,8 +1683,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getExposureCompensation API to the target server. returns the current Exposure Compensation
-
+     * Calls getExposureCompensation API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1722,7 +1695,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Exposure Compensation
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1745,8 +1718,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedExposureCompensation API to the target server. returns supported Exposure Compensation
-
+     * Calls getSupportedExposureCompensation API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1758,7 +1730,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Exposure Compensations
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1781,8 +1753,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableExposureCompensation API to the target server. returns the current and available Available Exposure Compensation
-
+     * Calls getAvailableExposureCompensation API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1794,7 +1765,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Exposure Compensation and a list of the supported Exposure Compensations
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1817,8 +1788,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setFNumber API to the target server. Sets the current F Number
-
+     * Calls setFNumber API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1830,7 +1800,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for F Number
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1853,8 +1823,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getFNumber API to the target server. returns the current F Number
-
+     * Calls getFNumber API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1866,7 +1835,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current F Number
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1889,8 +1858,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedFNumber API to the target server. returns supported F Number
-
+     * Calls getSupportedFNumber API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1902,7 +1870,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported F Numbers
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1925,8 +1893,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableFNumber API to the target server. returns the current and available Available F Number
-
+     * Calls getAvailableFNumber API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1938,7 +1905,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current F Number and a list of the supported F Numbers
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1961,8 +1928,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setShutterSpeed API to the target server. Sets the current Shutter Speed
-
+     * Calls setShutterSpeed API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -1974,7 +1940,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Shutter Speed
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -1997,8 +1963,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getShutterSpeed API to the target server. returns the current Shutter Speed
-
+     * Calls getShutterSpeed API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2010,7 +1975,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Shutter Speed
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2033,8 +1998,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedShutterSpeed API to the target server. returns supported Shutter Speed
-
+     * Calls getSupportedShutterSpeed API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2046,7 +2010,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Shutter Speeds
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2069,8 +2033,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableShutterSpeed API to the target server. returns the current and available Available Shutter Speed
-
+     * Calls getAvailableShutterSpeed API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2082,7 +2045,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Shutter Speed and a list of the supported Shutter Speeds
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2105,8 +2068,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setIsoSpeedRate API to the target server. Sets the current Iso Speed Rate
-
+     * Calls setIsoSpeedRate API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2118,7 +2080,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Iso Speed Rate
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2141,8 +2103,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getIsoSpeedRate API to the target server. returns the current Iso Speed Rate
-
+     * Calls getIsoSpeedRate API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2154,7 +2115,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Iso Speed Rate
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2177,8 +2138,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedIsoSpeedRate API to the target server. returns supported Iso Speed Rate
-
+     * Calls getSupportedIsoSpeedRate API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2190,7 +2150,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Iso Speed Rates
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2213,8 +2173,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableIsoSpeedRate API to the target server. returns the current and available Available Iso Speed Rate
-
+     * Calls getAvailableIsoSpeedRate API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2226,7 +2185,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Iso Speed Rate and a list of the supported Iso Speed Rates
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2249,8 +2208,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setWhiteBalance API to the target server. Sets the current White Balance
-
+     * Calls setWhiteBalance API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2262,7 +2220,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for White Balance
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2285,8 +2243,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getWhiteBalance API to the target server. returns the current White Balance
-
+     * Calls getWhiteBalance API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2298,7 +2255,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current White Balance
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2321,8 +2278,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedWhiteBalance API to the target server. returns supported White Balance
-
+     * Calls getSupportedWhiteBalance API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2334,7 +2290,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported White Balances
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2357,8 +2313,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableWhiteBalance API to the target server. returns the current and available Available White Balance
-
+     * Calls getAvailableWhiteBalance API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2370,7 +2325,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current White Balance and a list of the supported White Balances
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2393,8 +2348,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setProgramShift API to the target server. Sets the current Program Shift
-
+     * Calls setProgramShift API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2406,7 +2360,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Program Shift
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2429,8 +2383,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedProgramShift API to the target server. returns supported Program Shift
-
+     * Calls getSupportedProgramShift API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2442,7 +2395,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Program Shifts
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2465,8 +2418,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setFlashMode API to the target server. Sets the current Flash Mode
-
+     * Calls setFlashMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2478,7 +2430,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Flash Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2501,8 +2453,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getFlashMode API to the target server. returns the current Flash Mode
-
+     * Calls getFlashMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2514,7 +2465,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Flash Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2537,8 +2488,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedFlashMode API to the target server. returns supported Flash Mode
-
+     * Calls getSupportedFlashMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2550,7 +2500,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Flash Modes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2573,8 +2523,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailableFlashMode API to the target server. returns the current and available Available Flash Mode
-
+     * Calls getAvailableFlashMode API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2586,7 +2535,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Flash Mode and a list of the supported Flash Modes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2609,8 +2558,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls setPostviewImageSize API to the target server. Sets the current Postview Image Size
-
+     * Calls setPostviewImageSize API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2622,7 +2570,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject - Returns 0 on success or error code on failure.
+     * @return JSONObject - Returns 0 on success or error code on failure for Postview Image Size
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2645,8 +2593,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getPostviewImageSize API to the target server. returns the current Postview Image Size
-
+     * Calls getPostviewImageSize API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2658,7 +2605,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Postview Image Size
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2681,8 +2628,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getSupportedPostviewImageSize API to the target server. returns supported Postview Image Size
-
+     * Calls getSupportedPostviewImageSize API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2694,7 +2640,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a list of the supported Postview Image Sizes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2717,8 +2663,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getAvailablePostviewImageSize API to the target server. returns the current and available Available Postview Image Size
-
+     * Calls getAvailablePostviewImageSize API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2730,7 +2675,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Postview Image Size and a list of the supported Postview Image Sizes
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2753,8 +2698,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getVersions API to the target server. returns the current Versions
-
+     * Calls getVersions API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2766,7 +2710,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Versions
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2789,8 +2733,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getMethodTypes API to the target server. returns the current Method Types
-
+     * Calls getMethodTypes API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2802,7 +2745,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Method Types
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2825,8 +2768,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getEvent (v1.0) API to the target server. returns the current Event (v1.0)
-
+     * Calls getEvent (v1.0) API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2838,7 +2780,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Event (v1.0)
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2861,8 +2803,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getEvent (v1.1) API to the target server. returns the current Event (v1.1)
-
+     * Calls getEvent (v1.1) API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2874,7 +2815,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Event (v1.1)
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
@@ -2897,8 +2838,7 @@ public class SimpleRemoteApi {
     }
 
     /**
-     * Calls getEvent (v1.2) API to the target server. returns the current Event (v1.2)
-
+     * Calls getEvent (v1.2) API to the target server.
      * Example JSON data is below.
      *
      * <pre>
@@ -2910,7 +2850,7 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
-     * @return JSONObject -
+     * @return JSONObject - Returns a string of the current Event (v1.2)
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
