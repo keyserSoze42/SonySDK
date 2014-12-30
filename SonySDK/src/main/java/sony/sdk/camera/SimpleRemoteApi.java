@@ -2789,7 +2789,7 @@ public class SimpleRemoteApi {
         String service = "camera";
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "getEvent (v1.0)").put("params", new JSONArray())
+                    new JSONObject().put("method", "getEvent").put("params", new JSONArray())
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -2824,8 +2824,8 @@ public class SimpleRemoteApi {
         String service = "camera";
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "getEvent (v1.1)").put("params", new JSONArray())
-                            .put("id", id()).put("version", "1.0");
+                    new JSONObject().put("method", "getEvent").put("params", new JSONArray())
+                            .put("id", id()).put("version", "1.1");
             String url = findActionListUrl(service) + "/" + service;
 
             log("Request:  " + requestJson.toString());
@@ -2859,8 +2859,8 @@ public class SimpleRemoteApi {
         String service = "camera";
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "getEvent (v1.2)").put("params", new JSONArray())
-                            .put("id", id()).put("version", "1.0");
+                    new JSONObject().put("method", "getEvent").put("params", new JSONArray())
+                            .put("id", id()).put("version", "1.2");
             String url = findActionListUrl(service) + "/" + service;
 
             log("Request:  " + requestJson.toString());
