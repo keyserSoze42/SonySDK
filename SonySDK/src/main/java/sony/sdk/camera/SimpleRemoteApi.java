@@ -1,5 +1,6 @@
 /*
  * Copyright 2014 Sony Corporation
+ * Modified by stackoverflow user Keysersoze
  */
 
 package sony.sdk.camera;
@@ -2871,6 +2872,4 @@ public class SimpleRemoteApi {
             throw new IOException(e);
         }
     }
-
-
 }
