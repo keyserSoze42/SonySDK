@@ -95,31 +95,20 @@ public final class SimpleRemoteApiHelper {
      * 
      * @param simpleRemoteApi object of simpleRemoteApi
      * @param uri uri of target date
-     * @param isStreamSupported set true if target device supported streaming
-     *            playback
      * @return JSON data of response
      * @throws IOException IOException all errors and exception are wrapped by
      *             this Exception.
      */
     public static JSONObject
-            getContentListOfDay(SimpleRemoteApi simpleRemoteApi, String uri, //
-                    Boolean isStreamSupported) throws IOException {
+            getContentListOfDay(SimpleRemoteApi simpleRemoteApi, String uri) throws IOException {
 
         try {
             JSONObject replyJson = null;
-            JSONArray typeParam;
-            if (isStreamSupported) {
-                // Device supports streaming API.
-                // get still and movie contents.
-                typeParam = new JSONArray().put("still").put("movie_mp4").put("movie_xavcs");
-            } else {
-                // Device does not support streaming API.
-                // get only still contents.
-                typeParam = new JSONArray().put("still");
-            }
             JSONObject paramObj =
-                    new JSONObject().put("sort", "ascending").put("view", "date") //
-                            .put("type", typeParam).put("uri", uri);
+                    new JSONObject()
+                            .put("sort", "ascending").put("view", "date") //
+                            .put("type", new JSONArray().put("still").put("movie_mp4").put("movie_xavcs"))
+                            .put("uri", uri);
             JSONArray params = new JSONArray().put(0, paramObj);
 
             replyJson = simpleRemoteApi.getContentList(params);

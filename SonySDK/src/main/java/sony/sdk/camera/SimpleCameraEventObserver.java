@@ -14,6 +14,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -73,6 +74,11 @@ public class SimpleCameraEventObserver {
          */
         void onStorageIdChanged(String storageId);
 
+        /**
+         * Called when an error occurred.
+         */
+        void onResponseError();
+
         // :
         // : add methods for Event data as necessary.
     }
@@ -107,6 +113,10 @@ public class SimpleCameraEventObserver {
         public void onStorageIdChanged(String storageId) {
         }
 
+        @Override
+        public void onResponseError() {
+        }
+
     }
 
     private final Handler mUiHandler;
@@ -127,6 +137,10 @@ public class SimpleCameraEventObserver {
 
     // Current Shoot Mode value.
     private String mShootMode;
+
+    // Available Shoot Modes.
+    private List<String> mAvailableShootModes
+            = Collections.unmodifiableList(new ArrayList<String>());
 
     // Current Zoom Position value.
     private int mZoomPosition;
@@ -172,6 +186,7 @@ public class SimpleCameraEventObserver {
         }
 
         mWhileEventMonitoring = true;
+        mCameraStatus = null;
         new Thread() {
 
             @Override
@@ -197,6 +212,7 @@ public class SimpleCameraEventObserver {
                                 break;
                             case 1: // "Any" error
                             case 12: // "No such method" error
+                                fireResponseErrorListener();
                                 break MONITORLOOP; // end monitoring.
                             case 2: // "Timeout" error
                                 // Re-call immediately.
@@ -212,6 +228,7 @@ public class SimpleCameraEventObserver {
                             default:
                                 Log.w(TAG, "SimpleCameraEventObserver: Unexpected error: "
                                         + errorCode);
+                                fireResponseErrorListener();
                                 break MONITORLOOP; // end monitoring.
                         }
 
@@ -241,6 +258,11 @@ public class SimpleCameraEventObserver {
                         Log.d(TAG, "getEvent shootMode: " + shootMode);
                         if (shootMode != null && !shootMode.equals(mShootMode)) {
                             mShootMode = shootMode;
+
+                            // Available Shoot Modes
+                            List<String> shootModes= findAvailableShootModes(replyJson);
+                            mAvailableShootModes = Collections.unmodifiableList(shootModes);
+
                             fireShootModeChangeListener(shootMode);
                         }
 
@@ -266,9 +288,11 @@ public class SimpleCameraEventObserver {
                     } catch (IOException e) {
                         // Occurs when the server is not available now.
                         Log.d(TAG, "getEvent timeout by client trigger.");
+                        fireResponseErrorListener();
                         break MONITORLOOP;
                     } catch (JSONException e) {
                         Log.w(TAG, "getEvent: JSON format error. " + e.getMessage());
+                        fireResponseErrorListener();
                         break MONITORLOOP;
                     }
 
@@ -354,6 +378,15 @@ public class SimpleCameraEventObserver {
     }
 
     /**
+     * Return the current available Shoot Mode values.
+     *
+     * @return available shoot mode values
+     */
+    public List<String> getAvailableShootModes() {
+        return mAvailableShootModes;
+    }
+
+    /**
      * Returns the current Zoom Position value.
      * 
      * @return zoom position
@@ -436,7 +469,7 @@ public class SimpleCameraEventObserver {
     }
 
     /**
-     * Notify the change of Zoom Information
+     * Notify the change of Zoom Information.
      * 
      * @param zoomIndexCurrentBox
      * @param zoomNumberBox
@@ -467,6 +500,20 @@ public class SimpleCameraEventObserver {
             public void run() {
                 if (mListener != null) {
                     mListener.onStorageIdChanged(storageId);
+                }
+            }
+        });
+    }
+
+    /**
+     * Notify an error occurred.
+     */
+    private void fireResponseErrorListener() {
+        mUiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mListener != null) {
+                    mListener.onResponseError();
                 }
             }
         });
@@ -585,6 +632,35 @@ public class SimpleCameraEventObserver {
             }
         }
         return shootMode;
+    }
+
+    /**
+     * Finds and extracts available Shoot Mode values from reply JSON data. As for
+     * getEvent v1.0, results[21] => "shootMode"
+     *
+     * @param replyJson
+     * @return
+     * @throws JSONException
+     */
+    private static List<String> findAvailableShootModes(JSONObject replyJson) throws JSONException {
+        List<String> shootModes = new ArrayList<String>();
+        int indexOfShootMode = 21;
+        JSONArray resultsObj = replyJson.getJSONArray("result");
+        if (!resultsObj.isNull(indexOfShootMode)) {
+            JSONObject shootModesObj = resultsObj.getJSONObject(indexOfShootMode);
+            String type = shootModesObj.getString("type");
+            if ("shootMode".equals(type)) {
+                JSONArray shootModesArray = shootModesObj.getJSONArray("shootModeCandidates");
+                if (shootModesArray != null) {
+                    for (int i = 0; i < shootModesArray.length(); i++) {
+                        shootModes.add(shootModesArray.getString(i));
+                    }
+                }
+            } else {
+                Log.w(TAG, "Event reply: Illegal Index (21: ShootMode) " + type);
+            }
+        }
+        return shootModes;
     }
 
     /**

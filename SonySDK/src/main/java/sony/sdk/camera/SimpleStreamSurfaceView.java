@@ -7,7 +7,6 @@ package sony.sdk.camera;
 import sony.sdk.camera.utils.SimpleLiveviewSlicer;
 import sony.sdk.camera.utils.SimpleLiveviewSlicer.Payload;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +14,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -35,8 +33,6 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
     private boolean mWhileFetching;
 
     private final BlockingQueue<byte[]> mJpegQueue = new ArrayBlockingQueue<byte[]>(2);
-
-    private final boolean mInMutableAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 
     private Thread mDrawerThread;
 
@@ -177,9 +173,8 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
 
                 BitmapFactory.Options factoryOptions = new BitmapFactory.Options();
                 factoryOptions.inSampleSize = 1;
-                if (mInMutableAvailable) {
-                    initInBitmap(factoryOptions);
-                }
+                factoryOptions.inBitmap = null;
+                factoryOptions.inMutable = true;
 
                 while (mWhileFetching) {
                     try {
@@ -187,18 +182,16 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
                         frameBitmap = BitmapFactory.decodeByteArray(//
                                 jpegData, 0, jpegData.length, factoryOptions);
                     } catch (IllegalArgumentException e) {
-                        if (mInMutableAvailable) {
-                            clearInBitmap(factoryOptions);
+                        if (factoryOptions.inBitmap != null) {
+                            factoryOptions.inBitmap.recycle();
+                            factoryOptions.inBitmap = null;
                         }
                         continue;
                     } catch (InterruptedException e) {
                         Log.i(TAG, "Drawer thread is Interrupted.");
                         break;
                     }
-
-                    if (mInMutableAvailable) {
-                        setInBitmap(factoryOptions, frameBitmap);
-                    }
+                    factoryOptions.inBitmap = frameBitmap;
                     drawFrame(frameBitmap);
                 }
 
@@ -226,25 +219,6 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
      */
     public boolean isStarted() {
         return mWhileFetching;
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void initInBitmap(BitmapFactory.Options options) {
-        options.inBitmap = null;
-        options.inMutable = true;
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void clearInBitmap(BitmapFactory.Options options) {
-        if (options.inBitmap != null) {
-            options.inBitmap.recycle();
-            options.inBitmap = null;
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void setInBitmap(BitmapFactory.Options options, Bitmap bitmap) {
-        options.inBitmap = bitmap;
     }
 
     /**
