@@ -4,12 +4,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0-rc2'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         jcenter()
     }
 }
@@ -25,4 +26,9 @@ subprojects {
         }
         assemble.finalizedBy buildJavadoc
     }
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
 }

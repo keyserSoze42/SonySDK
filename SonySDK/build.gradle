@@ -1,8 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
-repositories {
-    mavenCentral()
+configurations {
+    provided
 }
 
 sourceSets {
@@ -13,6 +13,6 @@ sourceSets {
     }
 }
 dependencies {
-    compile 'com.google.android:android:4.1.1.4'
+    provided 'com.google.android:android:4.1.1.4'
 }
 
