@@ -3,6 +3,8 @@ apply plugin: 'maven'
 
 configurations {
     provided
+    compile.extendsFrom provided
+
 }
 
 sourceSets {
@@ -13,6 +15,6 @@ sourceSets {
     }
 }
 dependencies {
-    provided 'com.google.android:android:4.1.1.4'
+    provided files(  System.getenv("ANDROID_HOME") + '/platforms/android-23/android.jar')
 }
 
