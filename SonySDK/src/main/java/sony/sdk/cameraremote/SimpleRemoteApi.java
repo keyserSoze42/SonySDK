@@ -3,10 +3,10 @@
  * Modified by stackoverflow user Keysersoze
  */
 
-package sony.sdk.camera;
+package sony.sdk.cameraremote;
 
-import sony.sdk.camera.ServerDevice.ApiService;
-import sony.sdk.camera.utils.SimpleHttpClient;
+import sony.sdk.cameraremote.ServerDevice.ApiService;
+import sony.sdk.cameraremote.utils.SimpleHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;

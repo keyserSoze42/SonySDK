@@ -2,7 +2,7 @@
  * Copyright 2014 Sony Corporation
  */
 
-package sony.sdk.camera.utils;
+package sony.sdk.cameraremote.utils;
 
 import android.util.Log;
 

@@ -2,7 +2,7 @@
  * Copyright 2014 Sony Corporation
  */
 
-package sony.sdk.camera.utils;
+package sony.sdk.cameraremote.utils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

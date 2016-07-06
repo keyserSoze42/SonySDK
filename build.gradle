@@ -1,15 +1,21 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+ext{
+	version = "2.30"
+}
+
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0-rc2'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         jcenter()
     }
 }
@@ -20,9 +26,14 @@ subprojects {
             source = sourceSets.main.java.srcDirs
             destinationDir = file("build/docs/javadoc/")
             javadoc.destinationDir = file("${project.buildDir}/docs/javadoc/")
-            javadoc.classpath += files(System.getenv("ANDROID_HOME") + "/platforms/android-19/android.jar")
+            javadoc.classpath += files(System.getenv("ANDROID_HOME") + "/platforms/android-23/android.jar")
 
         }
         assemble.finalizedBy buildJavadoc
     }
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
 }
