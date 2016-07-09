@@ -21,6 +21,10 @@ allprojects {
 }
 
 subprojects {
+
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
     project.plugins.withType(JavaPlugin) {
         task buildJavadoc(type: Javadoc) {
             source = sourceSets.main.java.srcDirs
