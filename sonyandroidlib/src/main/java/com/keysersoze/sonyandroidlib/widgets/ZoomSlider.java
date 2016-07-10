@@ -1,4 +1,4 @@
-package widgets;
+package com.keysersoze.sonyandroidlib.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -40,16 +40,20 @@ public class ZoomSlider extends Slider {
         super.setOnPositionChangeListener(new OnPositionChangeListener (){
             @Override
             public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
-
-                try {
-                    mRemoteApi.actZoom("out", "1shot");
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(oldValue < newValue){
+                    try {
+                        mRemoteApi.actZoom("in", "1shot");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    try {
+                        mRemoteApi.actZoom("out", "1shot");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-
             }
         });
-
     }
-
 }
