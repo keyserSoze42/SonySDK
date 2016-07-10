@@ -10,13 +10,10 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -29,6 +26,8 @@ dependencies {
     //compile group:'sony.libs.api', name: 'SonySDK', version: '2.30'
     compile project(':SonySDK')
     compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.github.rey5137:material:1.2.4'
+    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-23/android.jar")
 
 }
 

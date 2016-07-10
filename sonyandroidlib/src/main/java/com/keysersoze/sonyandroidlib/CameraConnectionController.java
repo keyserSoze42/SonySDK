@@ -48,6 +48,7 @@ public class CameraConnectionController {
     public CameraConnectionController(Activity activity, CameraConnectionHandler connectionHandler) {
         this.activity = activity;
         this.connectionHandler = connectionHandler;
+        mRemoteApi = SimpleRemoteApi.getInstance();
     }
 
     /*
@@ -93,7 +94,6 @@ public class CameraConnectionController {
             }
         };
 
-        mRemoteApi = new SimpleRemoteApi(serverDevice);
         mEventObserver = new SimpleCameraEventObserver(activity.getApplicationContext(), mRemoteApi);
         mEventObserver.activate();
     }

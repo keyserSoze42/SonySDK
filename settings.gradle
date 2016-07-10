@@ -1,1 +1,2 @@
-include ':SonySDK', ':sonyandroidlib'
+include ':SonySDK'
+include ':sonyandroidlib'

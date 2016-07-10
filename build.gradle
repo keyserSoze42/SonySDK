@@ -33,8 +33,10 @@ subprojects {
             javadoc.classpath += files(System.getenv("ANDROID_HOME") + "/platforms/android-23/android.jar")
 
         }
-        assemble.finalizedBy buildJavadoc
+        //assemble.finalizedBy buildJavadoc
     }
+
+
 }
 
 
