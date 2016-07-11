@@ -21,6 +21,7 @@ import java.util.concurrent.Future;
 import sony.sdk.cameraremote.ServerDevice;
 import sony.sdk.cameraremote.SimpleCameraEventObserver;
 import sony.sdk.cameraremote.SimpleRemoteApi;
+import sony.sdk.cameraremote.utils.thread.ThreadPoolHelper;
 
 import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 
@@ -44,11 +45,13 @@ public class CameraConnectionController {
     private String cameraMode;
     private String liveViewUrl = null;
     private static CameraConnectionHandler connectionHandler;
+    private static ThreadPoolHelper threadPoolHelper;
 
     public CameraConnectionController(Activity activity, CameraConnectionHandler connectionHandler) {
         this.activity = activity;
         this.connectionHandler = connectionHandler;
         mRemoteApi = SimpleRemoteApi.getInstance();
+        threadPoolHelper = ThreadPoolHelper.getInstance();
     }
 
     /*
@@ -290,21 +293,6 @@ public class CameraConnectionController {
 
                     connectionHandler.onCameraConnected();
 
-                    // prepare UIs
-/*                    if (IsSupportedUtil.isCameraApiAvailable("getAvailableShootMode")) {
-                        Log.d(TAG, "openConnection(): prepareShootModeSpinner()");
-                        prepareShootModeSpinner();
-                        // Note: hide progress bar on title after this calling.
-                    }
-
-                    // prepare UIs
-                    if (isCameraApiAvailable("actZoom")) {
-                        Log.d(TAG, "openConnection(): prepareActZoomButtons()");
-                        prepareActZoomButtons(true);
-                    } else {
-                        prepareActZoomButtons(false);
-                    }*/
-
                     Log.d(TAG, "openConnection(): completed.");
                 } catch (IOException e) {
                     Log.w(TAG, "openConnection : IOException: " + e.getMessage());
@@ -360,5 +348,26 @@ public class CameraConnectionController {
         void onCameraConnected();
 
         void onCameraReady();
+    }
+
+    /**
+     * Stop monitoring Camera events and close liveview connection.
+     */
+    private void closeConnection() {
+
+        Log.d(TAG, "closeConnection(): exec.");
+        // Liveview stop
+        Log.d(TAG, "closeConnection(): LiveviewSurface.stop()");
+        stopLiveview();
+
+        // getEvent stop
+        Log.d(TAG, "closeConnection(): EventObserver.release()");
+        mEventObserver.release();
+
+        Log.d(TAG, "closeConnection(): Shutdown the executor");
+        threadPoolHelper.shutdownNow();
+        threadPoolHelper = null;
+
+        Log.d(TAG, "closeConnection(): completed.");
     }
 }
