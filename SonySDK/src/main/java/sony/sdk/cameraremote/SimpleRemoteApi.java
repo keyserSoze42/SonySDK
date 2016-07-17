@@ -438,6 +438,39 @@ public class SimpleRemoteApi {
     }
 
     /**
+     * Calls actHalfPressShutter API to the target server. Request JSON data is such
+     * like as below.
+     * <p/>
+     * <pre>
+     * {
+     * "method": "actHalfPressShutter",
+     * "params": [],
+     * "id": 1,
+     * "version": "1.0"
+     * }
+     * </pre>
+     *
+     * @return JSON data of response
+     * @throws IOException
+     */
+    public JSONObject actHalfPressShutter() throws IOException {
+        String service = "camera";
+        try {
+            JSONObject requestJson =
+                    new JSONObject().put("method", "actHalfPressShutter").put("params", new JSONArray()) //
+                            .put("id", id()).put("version", "1.0");
+            String url = findActionListUrl(service) + "/" + service;
+
+            log("Request:  " + requestJson.toString());
+            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString());
+            log("Response: " + responseJson);
+            return new JSONObject(responseJson);
+        } catch (JSONException e) {
+            throw new IOException(e);
+        }
+    }
+
+    /**
      * Calls actTakePicture API to the target server. Request JSON data is such
      * like as below.
      * <p/>
@@ -469,6 +502,8 @@ public class SimpleRemoteApi {
             throw new IOException(e);
         }
     }
+
+
 
     /**
      * Calls startMovieRec API to the target server. Request JSON data is such
