@@ -2,10 +2,10 @@
  * Copyright 2014 Sony Corporation
  */
 
-package sony.sdk.camera;
+package sony.sdk.cameraremote;
 
-import sony.sdk.camera.utils.SimpleHttpClient;
-import sony.sdk.camera.utils.XmlElement;
+import sony.sdk.cameraremote.utils.SimpleHttpClient;
+import sony.sdk.cameraremote.utils.XmlElement;
 
 import android.util.Log;
 

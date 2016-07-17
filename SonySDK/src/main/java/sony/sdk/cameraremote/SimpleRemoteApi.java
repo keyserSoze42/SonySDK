@@ -3,10 +3,10 @@
  * Modified by stackoverflow user Keysersoze
  */
 
-package sony.sdk.camera;
+package sony.sdk.cameraremote;
 
-import sony.sdk.camera.ServerDevice.ApiService;
-import sony.sdk.camera.utils.SimpleHttpClient;
+import sony.sdk.cameraremote.ServerDevice.ApiService;
+import sony.sdk.cameraremote.utils.SimpleHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,14 +34,27 @@ public class SimpleRemoteApi {
     // Request ID of API calling. This will be counted up by each API calling.
     private int mRequestId;
 
+    private static SimpleRemoteApi simpleRemoteApiInstance = null;
+
     /**
      * Constructor.
      *
      * @param target server device of Remote API
      */
-    public SimpleRemoteApi(ServerDevice target) {
-        mTargetServer = target;
+    private SimpleRemoteApi() {
         mRequestId = 1;
+    }
+
+    public static SimpleRemoteApi getInstance(){
+        if(simpleRemoteApiInstance == null) {
+            simpleRemoteApiInstance = new SimpleRemoteApi();
+        }
+        return simpleRemoteApiInstance;
+    }
+
+    public void init(ServerDevice target) {
+        mTargetServer = target;
+
     }
 
     /**

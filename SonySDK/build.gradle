@@ -1,5 +1,27 @@
 apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'idea'
+
+targetCompatibility = '1.7'
+sourceCompatibility = '1.7'
+
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+idea {
+    module {
+        scopes.PROVIDED.plus += [configurations.provided]
+    }
+}
+
+ext {
+    androidCompileVersion = 23
+}
 
 configurations {
     provided
@@ -14,7 +36,31 @@ sourceSets {
         }
     }
 }
+
 dependencies {
-    provided files(  System.getenv("ANDROID_HOME") + '/platforms/android-23/android.jar')
+    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-${project.ext.androidCompileVersion}/android.jar")
 }
 
+gradle.projectsEvaluated {
+	jar.finalizedBy 'publishToMavenLocal'
+}
+
+publishing {
+    //We should dynamiclly find the GroupID.  In order to do this we need to get the path
+//and split the string to the appropriate parts and conver the / into .
+    def pomGroupId = (project.projectDir.toString()
+            - rootDir.getAbsolutePath().toString()
+            - project.name.toString()).replaceAll('/', '.')
+    pomGroupId = pomGroupId.substring(0, pomGroupId.lastIndexOf('.'))
+    repositories {
+        mavenLocal()
+    }
+    publications {
+        mavenJar(MavenPublication) {
+            groupId 'sony.libs.api'
+            artifactId project.name
+            version rootProject.ext.version
+            from components.java
+        }
+    }
+}

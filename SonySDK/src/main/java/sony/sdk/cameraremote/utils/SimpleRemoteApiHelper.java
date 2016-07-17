@@ -2,9 +2,9 @@
  * Copyright 2014 Sony Corporation
  */
 
-package sony.sdk.camera.utils;
+package sony.sdk.cameraremote.utils;
 
-import sony.sdk.camera.SimpleRemoteApi;
+import sony.sdk.cameraremote.SimpleRemoteApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +43,7 @@ public final class SimpleRemoteApiHelper {
      * }
      * </pre>
      * 
-     * @param object of SimpleRemoteAPi
+     * @param simpleRemoteApi
      * @return JSON data of response
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.

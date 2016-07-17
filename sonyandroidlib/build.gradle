@@ -1,0 +1,52 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+gradle.projectsEvaluated {
+    assemble.finalizedBy 'publishToMavenLocal'
+}
+
+dependencies {
+    //compile group:'sony.libs.api', name: 'SonySDK', version: '2.30'
+    compile project(':SonySDK')
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.github.rey5137:material:1.2.4'
+    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-23/android.jar")
+
+}
+
+publishing {
+    //We should dynamiclly find the GroupID.  In order to do this we need to get the path
+//and split the string to the appropriate parts and conver the / into .
+    def pomGroupId = (project.projectDir.toString()
+            - rootDir.getAbsolutePath().toString()
+            - project.name.toString()).replaceAll('/', '.')
+    pomGroupId = pomGroupId.substring(0, pomGroupId.lastIndexOf('.'))
+    repositories {
+        mavenLocal()
+    }
+    publications {
+        mavenJar(MavenPublication) {
+            groupId 'sony.libs.api'
+            artifactId project.name
+            version rootProject.ext.version
+            artifact("$buildDir/outputs/aar/${project.getName()}-debug.aar")
+        }
+    }
+}
