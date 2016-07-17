@@ -1,6 +1,7 @@
 package com.keysersoze.sonyandroidlib;
 
-import android.app.Activity;
+//import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +33,7 @@ import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 public class CameraConnectionController {
 
     private boolean connectionStatus = false;
-    private Activity activity;
+    //private Activity activity;
     private String cameraAddress;
 
     private static final String TAG = "ConnectionController";
@@ -46,9 +48,10 @@ public class CameraConnectionController {
     private String liveViewUrl = null;
     private static CameraConnectionHandler connectionHandler;
     private static ThreadPoolHelper threadPoolHelper;
+    private Context context;
 
-    public CameraConnectionController(Activity activity, CameraConnectionHandler connectionHandler) {
-        this.activity = activity;
+    public CameraConnectionController(Context context, CameraConnectionHandler connectionHandler) {
+        this.context = context;
         this.connectionHandler = connectionHandler;
         mRemoteApi = SimpleRemoteApi.getInstance();
         threadPoolHelper = ThreadPoolHelper.getInstance();
@@ -97,7 +100,7 @@ public class CameraConnectionController {
             }
         };
 
-        mEventObserver = new SimpleCameraEventObserver(activity.getApplicationContext(), mRemoteApi);
+        mEventObserver = new SimpleCameraEventObserver(context, mRemoteApi);
         mEventObserver.activate();
     }
 
@@ -291,9 +294,10 @@ public class CameraConnectionController {
                         mEventObserver.start();
                     }
 
+                    Log.d(TAG, "openConnection(): completed.");
                     connectionHandler.onCameraConnected();
 
-                    Log.d(TAG, "openConnection(): completed.");
+
                 } catch (IOException e) {
                     Log.w(TAG, "openConnection : IOException: " + e.getMessage());
                 }

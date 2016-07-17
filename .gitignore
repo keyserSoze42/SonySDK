@@ -1,7 +1,7 @@
 build/
 .idea/
 .gradle/
-
+.fuse*
 *.iml
 local.properties
 

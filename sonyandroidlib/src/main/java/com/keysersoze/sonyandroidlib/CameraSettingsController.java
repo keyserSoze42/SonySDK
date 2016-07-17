@@ -19,7 +19,7 @@ public class CameraSettingsController {
 
     private SimpleRemoteApi mRemoteApi;
     private ServerDevice serverDevice;
-    private static final String TAG = "CameraSettingsController";
+    private static final String TAG = "SettingsController";
     private JSONObject currentEvent = null;
 
     public CameraSettingsController(){
@@ -58,6 +58,28 @@ public class CameraSettingsController {
 /*                        DisplayHelper.toast(getApplicationContext(), //
                                 R.string.msg_error_api_calling);*/
                     }
+                } catch (IOException e) {
+                    Log.w(TAG, "actZoom: IOException: " + e.getMessage());
+                } catch (JSONException e) {
+                    Log.w(TAG, "actZoom: JSON format error.");
+                }
+            }
+        }.start();
+    }
+
+    /**
+     * Call actTakePicture
+     *
+     */
+    private void actTakePicture() {
+        new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    JSONObject replyJson = mRemoteApi.actTakePicture();
+                    JSONArray resultsObj = replyJson.getJSONArray("result");
+                    JSONArray imageUrlsObj = resultsObj.getJSONArray(0);
                 } catch (IOException e) {
                     Log.w(TAG, "actZoom: IOException: " + e.getMessage());
                 } catch (JSONException e) {
