@@ -136,7 +136,7 @@ public class ViewFinderLayout extends FrameLayout{
         mDrawThread.start();
     }
 
-        /**
+    /**
      * Check to see whether start() is already called.
      *
      * @return true if start() is already called, false otherwise.
@@ -278,8 +278,8 @@ public class ViewFinderLayout extends FrameLayout{
      */
     private void onDetectedFrameSizeChanged(int width, int height) {
         Log.d(TAG, "Change of aspect ratio detected");
-        mPreviousWidth = 320;
-        mPreviousHeight = 180;
+        mPreviousWidth = width;
+        mPreviousHeight = height;
 
         drawBlackFrame();
         drawBlackFrame();
