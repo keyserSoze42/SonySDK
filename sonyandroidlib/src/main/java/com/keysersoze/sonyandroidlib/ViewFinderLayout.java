@@ -27,9 +27,9 @@ import sony.sdk.cameraremote.utils.SimpleLiveviewSlicer;
  * Created by aaron on 7/10/16.
  */
 
-public class ConnectionTestStatusLayout extends FrameLayout{
+public class ViewFinderLayout extends FrameLayout{
 
-    private static final String TAG = ConnectionTestStatusLayout.class.getSimpleName();
+    private static final String TAG = ViewFinderLayout.class.getSimpleName();
     /**
      * The duration, in millisconds, of one frame.
      */
@@ -51,22 +51,19 @@ public class ConnectionTestStatusLayout extends FrameLayout{
     private Thread mDrawThread;
     private String streamUrl;
 
-    private int mCenterX;
-    private int mCenterY;
-
     private StreamErrorListener mErrorListener;
 
-    public ConnectionTestStatusLayout(Context context) {
+    public ViewFinderLayout(Context context) {
         super(context);
         init();
     }
 
-    public ConnectionTestStatusLayout(Context context, AttributeSet attrs) {
+    public ViewFinderLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public ConnectionTestStatusLayout(Context context, AttributeSet attrs, int defStyle) {
+    public ViewFinderLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -103,6 +100,10 @@ public class ConnectionTestStatusLayout extends FrameLayout{
         updateRenderingState();
     }
 
+    public void setStreamErrorListener(StreamErrorListener streamErrorListener){
+        mErrorListener = streamErrorListener;
+    }
+
     /**
      * Starts or stops rendering according to the {@link LiveCard}'s state.
      */
@@ -116,7 +117,10 @@ public class ConnectionTestStatusLayout extends FrameLayout{
         if (streamUrl == null) {
             Log.e(TAG, "start() streamUrl is null.");
             mWhileFetching = false;
-            mErrorListener.onError(StreamErrorListener.StreamErrorReason.OPEN_ERROR);
+            if(mErrorListener != null){
+                mErrorListener.onError(StreamErrorListener.StreamErrorReason.OPEN_ERROR);    
+            }
+            
             return;
         }
 
@@ -148,7 +152,7 @@ public class ConnectionTestStatusLayout extends FrameLayout{
         mWhileFetching = false;
     }
 
-    public Thread getStreamThread(){
+    private Thread getStreamThread(){
         Thread newStreamThread = null;
         newStreamThread = new Thread() {
             @Override
@@ -176,7 +180,9 @@ public class ConnectionTestStatusLayout extends FrameLayout{
                     }
                 } catch (IOException e) {
                     Log.w(TAG, "IOException while fetching: " + e.getMessage());
-                    mErrorListener.onError(StreamErrorListener.StreamErrorReason.IO_EXCEPTION);
+                    if(mErrorListener != null){
+                       mErrorListener.onError(StreamErrorListener.StreamErrorReason.IO_EXCEPTION);
+                    }
                 } finally {
                     if (slicer != null) {
                         slicer.close();
@@ -195,7 +201,7 @@ public class ConnectionTestStatusLayout extends FrameLayout{
         return newStreamThread;
     }
 
-    public Thread getDrawThread(){
+    private Thread getDrawThread(){
         Thread newDrawThread = null;
         newDrawThread = new Thread() {
             @Override
