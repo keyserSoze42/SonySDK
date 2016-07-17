@@ -1,6 +1,6 @@
 package com.keysersoze.sonyandroidlib;
 
-//import android.app.Activity;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,7 +33,6 @@ import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 public class CameraConnectionController {
 
     private boolean connectionStatus = false;
-    //private Activity activity;
     private String cameraAddress;
 
     private static final String TAG = "ConnectionController";
@@ -110,12 +109,10 @@ public class CameraConnectionController {
     }
 
     public void onErrorFinished() {
-        activity.runOnUiThread(new Runnable() {
+        ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "Error!");
-                Toast.makeText(activity, "Address is: ", Toast.LENGTH_LONG).show();
-                //deviceStatus.setText("ERROR");
             }
         });
     }
@@ -201,7 +198,7 @@ public class CameraConnectionController {
     private void startOpenConnectionAfterChangeCameraState() {
         Log.d(TAG, "startOpenConectiontAfterChangeCameraState() exec");
 
-        activity.runOnUiThread(new Runnable() {
+        ((Activity) context).runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
