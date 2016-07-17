@@ -66,6 +66,7 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
         super(context, attrs, defStyle);
         getHolder().addCallback(this);
         viewFinderLayout = new ViewFinderLayout(context, attrs, defStyle);
+    
     }
 
     @Override
@@ -78,8 +79,6 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
     public void surfaceCreated(SurfaceHolder holder) {
         // do nothing.
         viewFinderLayout.surfaceCreated(holder);
-        
-
     }
 
     @Override
@@ -94,9 +93,11 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
      * @see SimpleLiveviewSurfaceView#bindRemoteApi(SimpleRemoteApi)
      */
     public boolean start(final String streamUrl, StreamErrorListener listener) {
-        viewFinderLayout.setStreamErrorListener(listener);
-        viewFinderLayout.setStreamUrl(streamUrl);
-        viewFinderLayout.updateRenderingState();
+        
+            viewFinderLayout.setStreamErrorListener(listener);
+            viewFinderLayout.setStreamUrl(streamUrl);
+            viewFinderLayout.updateRenderingState();    
+        
         return true;
     }
 

@@ -45,13 +45,16 @@ public class ViewFinderLayout extends FrameLayout{
     private boolean mWhileFetching;
 
     private Paint mPaint;
-    private String mText;
 
     private SurfaceHolder mHolder;
     private boolean mRenderingPaused;
 
+    private int mCenterX;
+    private int mCenterY;
+
     private Thread mStreamThread;
     private Thread mDrawThread;
+    private Thread drawConnectingThread;
     private String streamUrl;
 
     private StreamErrorListener mErrorListener;
@@ -69,6 +72,7 @@ public class ViewFinderLayout extends FrameLayout{
     public ViewFinderLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
+    
     }
 
     private void init(){
@@ -79,6 +83,8 @@ public class ViewFinderLayout extends FrameLayout{
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mHolder = holder;
+        mCenterX = width/2;
+        mCenterY = height/2;
         onDetectedFrameSizeChanged(width, height);
         Log.w(TAG, "surfaceChanged");
     }
@@ -131,12 +137,12 @@ public class ViewFinderLayout extends FrameLayout{
             Log.w(TAG, "start() already starting.");
             return;
         }
-
         mWhileFetching = true;
         mStreamThread = getStreamThread();
         mDrawThread = getDrawThread();
         mStreamThread.start();
-        mDrawThread.start();
+        mDrawThread.start();        
+        
     }
 
     /**
@@ -298,7 +304,7 @@ public class ViewFinderLayout extends FrameLayout{
         }
         Log.d(TAG, "drawing black frame");
         Paint paint = new Paint();
-        paint.setColor(Color.BLUE);
+        paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.FILL);
 
         canvas.drawRect(new Rect(0, 0, mPreviousWidth, mPreviousHeight), paint);
@@ -314,4 +320,5 @@ public class ViewFinderLayout extends FrameLayout{
 
         void onError(StreamErrorReason reason);
     }
+
 }
