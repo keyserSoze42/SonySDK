@@ -267,7 +267,6 @@ public class ViewFinderLayout extends FrameLayout{
         float by = Math.min((float) mPreviousWidth / w, (float) mPreviousHeight / h);
         int offsetX = (mPreviousWidth - (int) (w * by)) / 2;
         int offsetY = (mPreviousHeight - (int) (h * by)) / 2;
-        Log.i(TAG, "Drawer thread is drawing: frame X: " + Integer.toString(w) + " frame Y: " + Integer.toString(h));
         Rect dst = new Rect(offsetX, offsetY, mPreviousWidth - offsetX, mPreviousHeight - offsetY);
         canvas.drawBitmap(frame, src, dst, mPaint);
         mHolder.unlockCanvasAndPost(canvas);
