@@ -1714,11 +1714,12 @@ public class SimpleRemoteApi {
      *             Exception.
      */
 
-    public JSONObject setExposureCompensation() throws IOException {
+    public JSONObject setExposureCompensation(int exposureComp) throws IOException {
         String service = "camera";
         try {
+            JSONArray params = new JSONArray().put(exposureComp);
             JSONObject requestJson =
-                    new JSONObject().put("method", "setExposureCompensation").put("params", new JSONArray())
+                    new JSONObject().put("method", "setExposureCompensation").put("params", params)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -1854,11 +1855,12 @@ public class SimpleRemoteApi {
      *             Exception.
      */
 
-    public JSONObject setFNumber() throws IOException {
+    public JSONObject setFNumber(String fNumber) throws IOException {
         String service = "camera";
         try {
+            JSONArray params = new JSONArray().put(fNumber);
             JSONObject requestJson =
-                    new JSONObject().put("method", "setFNumber").put("params", new JSONArray())
+                    new JSONObject().put("method", "setFNumber").put("params", params)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -1994,11 +1996,12 @@ public class SimpleRemoteApi {
      *             Exception.
      */
 
-    public JSONObject setShutterSpeed() throws IOException {
+    public JSONObject setShutterSpeed(String shutterSpeed) throws IOException {
         String service = "camera";
         try {
+            JSONArray params = new JSONArray().put(shutterSpeed);
             JSONObject requestJson =
-                    new JSONObject().put("method", "setShutterSpeed").put("params", new JSONArray())
+                    new JSONObject().put("method", "setShutterSpeed").put("params", params)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 

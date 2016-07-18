@@ -127,7 +127,7 @@ public class CameraConnectionController {
                 String viewUrl = null;
                 try {
                     JSONObject replyJson = null;
-                    replyJson = mRemoteApi.startLiveview();
+                    replyJson = mRemoteApi.startLiveviewWithSize("L");
 
                     if (!SimpleRemoteApi.isErrorReply(replyJson)) {
                         JSONArray resultsObj = replyJson.getJSONArray("result");
