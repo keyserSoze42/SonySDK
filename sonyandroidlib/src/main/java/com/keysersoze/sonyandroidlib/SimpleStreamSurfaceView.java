@@ -94,9 +94,9 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
      */
     public boolean start(final String streamUrl, StreamErrorListener listener) {
         
-            viewFinderLayout.setStreamErrorListener(listener);
-            viewFinderLayout.setStreamUrl(streamUrl);
-            viewFinderLayout.updateRenderingState();    
+        viewFinderLayout.setStreamErrorListener(listener);
+        viewFinderLayout.setStreamUrl(streamUrl);
+        viewFinderLayout.updateRenderingState();    
         
         return true;
     }
