@@ -302,6 +302,76 @@ public class SimpleRemoteApi {
     }
 
     /**
+     * Calls startContShooting API to the target server. Request JSON data
+     * is such like as below.
+     * <p/>
+     * <pre>
+     * {
+     *   "method": "startContShooting",
+     *   "params": [],
+     *   "id": 1,
+     *   "version": "1.0"
+     * }
+     * </pre>
+     *
+     * @return JSON data of response
+     * @throws IOException all errors and exception are wrapped by this
+     *                     Exception.
+     */
+    public JSONObject startContShooting() throws IOException {
+        String service = "camera";
+        try {
+            JSONObject requestJson =
+                    new JSONObject().put("method", "startContShooting") //
+                            .put("params", new JSONArray()).put("id", id()) //
+                            .put("version", "1.0");
+            String url = findActionListUrl(service) + "/" + service;
+
+            log("Request:  " + requestJson.toString());
+            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString());
+            log("Response: " + responseJson);
+            return new JSONObject(responseJson);
+        } catch (JSONException e) {
+            throw new IOException(e);
+        }
+    }
+
+    /**
+     * Calls startContShooting API to the target server. Request JSON data
+     * is such like as below.
+     * <p/>
+     * <pre>
+     * {
+     *   "method": "startContShooting",
+     *   "params": [],
+     *   "id": 1,
+     *   "version": "1.0"
+     * }
+     * </pre>
+     *
+     * @return JSON data of response
+     * @throws IOException all errors and exception are wrapped by this
+     *                     Exception.
+     */
+    public JSONObject stopContShooting() throws IOException {
+        String service = "camera";
+        try {
+            JSONObject requestJson =
+                    new JSONObject().put("method", "stopContShooting") //
+                            .put("params", new JSONArray()).put("id", id()) //
+                            .put("version", "1.0");
+            String url = findActionListUrl(service) + "/" + service;
+
+            log("Request:  " + requestJson.toString());
+            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString());
+            log("Response: " + responseJson);
+            return new JSONObject(responseJson);
+        } catch (JSONException e) {
+            throw new IOException(e);
+        }
+    }
+
+    /**
      * Calls startLiveview API to the target server. Request JSON data is such
      * like as below.
      * <p/>
@@ -1577,6 +1647,7 @@ public class SimpleRemoteApi {
     public JSONObject setFocusMode() throws IOException {
         String service = "camera";
         try {
+
             JSONObject requestJson =
                     new JSONObject().put("method", "setFocusMode").put("params", new JSONArray())
                             .put("id", id()).put("version", "1.0");
@@ -1985,7 +2056,7 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setShutterSpeed",
-     *   "params": [],
+     *   "params": ["1/2"],
      *   "id": 1,
      *   "version": "1.0"
      * }
