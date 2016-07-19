@@ -4,14 +4,29 @@ apply plugin: 'idea'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
-configurations {
+/*configurations {
     provided {
         dependencies.all { dep ->
             configurations.default.exclude group: dep.group, module: dep.name
         }
     }
     compile.extendsFrom provided
+}*/
+configurations {
+    provided
+    provided.extendsFrom(compile)
+
 }
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+        java {
+            srcDir 'src'
+        }
+    }
+}
+
+sourceSets.main.compileClasspath += configurations.provided
 
 idea {
     module {
@@ -21,20 +36,6 @@ idea {
 
 ext {
     androidCompileVersion = 23
-}
-
-configurations {
-    provided
-    compile.extendsFrom provided
-
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir 'src'
-        }
-    }
 }
 
 dependencies {
