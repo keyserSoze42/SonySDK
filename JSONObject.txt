@@ -1,0 +1,63 @@
+JSONObject requestJson = new JSONObject().put("method", "getSupportedExposureCompensation").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailableExposureCompensation").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setFNumber").put("params", params).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson =new JSONObject().put("method", "getSupportedFNumber").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailableFNumber").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setShutterSpeed").put("params", params).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getShutterSpeed").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getSupportedShutterSpeed").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailableShutterSpeed").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setIsoSpeedRate").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getIsoSpeedRate").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getSupportedIsoSpeedRate").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailableIsoSpeedRate").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setWhiteBalance").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getWhiteBalance").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getSupportedWhiteBalance").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailableWhiteBalance").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setProgramShift").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getSupportedProgramShift").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setFlashMode").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getFlashMode").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getSupportedFlashMode").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailableFlashMode").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "setPostviewImageSize").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getPostviewImageSize").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getSupportedPostviewImageSize").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getAvailablePostviewImageSize").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getVersions").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getMethodTypes").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getEvent").put("params", new JSONArray()).put("id", id()).put("version", "1.0");
+
+JSONObject requestJson = new JSONObject().put("method", "getEvent").put("params", new JSONArray()).put("id", id()).put("version", "1.1");
+
+JSONObject requestJson = new JSONObject().put("method", "getEvent").put("params", new JSONArray()).put("id", id()).put("version", "1.2");
