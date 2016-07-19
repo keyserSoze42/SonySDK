@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 ext{
-	version = "2.30"
+	version = "2.30-2"
 }
 
 buildscript {
