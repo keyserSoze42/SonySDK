@@ -20,10 +20,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import sony.sdk.cameraremote.ApiThreadBuilder;
 import sony.sdk.cameraremote.ServerDevice;
 import sony.sdk.cameraremote.SimpleCameraEventObserver;
 import sony.sdk.cameraremote.SimpleRemoteApi;
 import sony.sdk.cameraremote.utils.thread.ThreadPoolHelper;
+import sony.sdk.cameraremote.CommandThreadCallback;
 
 import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 
@@ -39,7 +41,7 @@ public class CameraConnectionController {
 
     private ServerDevice serverDevice;
     private static SimpleCameraEventObserver.ChangeListener mEventListener;
-    private static SimpleRemoteApi mRemoteApi;
+    private static ApiThreadBuilder mRemoteApi;
     private static SimpleCameraEventObserver mEventObserver;
     private static final Set<String> mSupportedApiSet = new HashSet<String>();
     private static final Set<String> mAvailableApiSet = new HashSet<String>();
@@ -49,10 +51,10 @@ public class CameraConnectionController {
     private static ThreadPoolHelper threadPoolHelper;
     private Context context;
 
-    public CameraConnectionController(Context context, CameraConnectionHandler connectionHandler) {
+    public CameraConnectionController(Context context, CameraConnectionHandler connectionHandler) throws IOException {
         this.context = context;
         this.connectionHandler = connectionHandler;
-        mRemoteApi = SimpleRemoteApi.getInstance();
+        mRemoteApi = ApiThreadBuilder.getInstance();
         threadPoolHelper = ThreadPoolHelper.getInstance();
     }
 
@@ -120,14 +122,23 @@ public class CameraConnectionController {
     public String startLiveview() {
         String liveViewUrl = null;
 
-        ExecutorService service =  Executors.newSingleThreadExecutor();
+        try {
+            JSONArray resultsObj = mRemoteApi.startLiveviewWithSize("L").getJSONArray("result");
+            liveViewUrl = resultsObj.getString(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        /*ExecutorService service =  Executors.newSingleThreadExecutor();
         Future<String> future = service.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
                 String viewUrl = null;
                 try {
                     JSONObject replyJson = null;
-                    replyJson = mRemoteApi.startLiveviewWithSize("L");
+                    replyJson =
 
                     if (!SimpleRemoteApi.isErrorReply(replyJson)) {
                         JSONArray resultsObj = replyJson.getJSONArray("result");
@@ -151,7 +162,7 @@ public class CameraConnectionController {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         return liveViewUrl;
@@ -247,10 +258,7 @@ public class CameraConnectionController {
     public static void openConnection() {
 
         mEventObserver.setEventChangeListener(mEventListener);
-        new Thread() {
 
-            @Override
-            public void run() {
                 Log.d(TAG, "openConnection(): exec.");
 
                 try {
@@ -278,28 +286,38 @@ public class CameraConnectionController {
                     // startRecMode if necessary.
                     if (IsSupportedUtil.isCameraApiAvailable("startRecMode", mAvailableApiSet)) {
                         Log.d(TAG, "openConnection(): startRecMode()");
+                        
+                        
+                        mRemoteApi.setThreadCallback(new CommandThreadCallback(){
+                            public void threadFinished(JSONObject replyJson){
+                                // Call again.
+                                try {
+                                    mRemoteApi.setThreadCallback(new CommandThreadCallback(){
+                                        public void threadFinished(JSONObject replyJson){
+                                            loadAvailableCameraApiList(replyJson);
+                                            // getEvent start
+                                            if (IsSupportedUtil.isCameraApiAvailable("getEvent", mAvailableApiSet)) {
+                                                Log.d(TAG, "openConnection(): EventObserver.start()");
+                                                mEventObserver.start();
+                                            }
+
+                                            Log.d(TAG, "openConnection(): completed.");
+                                            connectionHandler.onCameraConnected();
+                                        }
+                                    });
+                                    mRemoteApi.getAvailableApiList();
+                                    
+                                } catch (IOException e) {
+                                    Log.w(TAG, "openConnection : IOException: " + e.getMessage());
+                                }
+                            }
+                        });
                         replyJson = mRemoteApi.startRecMode();
-
-                        // Call again.
-                        replyJson = mRemoteApi.getAvailableApiList();
-                        loadAvailableCameraApiList(replyJson);
                     }
-
-                    // getEvent start
-                    if (IsSupportedUtil.isCameraApiAvailable("getEvent", mAvailableApiSet)) {
-                        Log.d(TAG, "openConnection(): EventObserver.start()");
-                        mEventObserver.start();
-                    }
-
-                    Log.d(TAG, "openConnection(): completed.");
-                    connectionHandler.onCameraConnected();
-
 
                 } catch (IOException e) {
                     Log.w(TAG, "openConnection : IOException: " + e.getMessage());
                 }
-            }
-        }.start();
 
     }
 

@@ -20,10 +20,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import sony.sdk.cameraremote.utils.SimpleHttpClient;
-
+import sony.sdk.cameraremote.CommandThreadCallback;
 /**
  * Created by aaron on 7/19/16.
  */
+
 public class ApiThreadBuilder {
 
     private String TAG = ApiThreadBuilder.class.getSimpleName();
@@ -31,6 +32,9 @@ public class ApiThreadBuilder {
     private static ServerDevice mTargetServer;
     private HashMap<String, JSONObject> apiMap;
     private static ApiThreadBuilder remoteApiInstance = null;
+    private int mRequestId;
+    private CommandThreadCallback threadCallback;
+    ExecutorService service
 
     private ApiThreadBuilder() throws IOException{
         try {
@@ -49,11 +53,17 @@ public class ApiThreadBuilder {
     }
     public void init(ServerDevice target) {
         mTargetServer = target;
-
+        mRequestId = 1;
+        service =  Executors.newSingleThreadExecutor();
     }
-    private String sendCommandString(final String command, final JSONArray params) throws IOException{
 
-        ExecutorService service =  Executors.newSingleThreadExecutor();
+    public void setThreadCallback(CommandThreadCallback threadCallback){
+        this.threadCallback = threadCallback;
+    }
+
+    private JSONObject sendCommandString(final String command, final JSONArray params) throws IOException{
+
+        
         Future<String> future = service.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
@@ -67,10 +77,18 @@ public class ApiThreadBuilder {
 
                     String service = jsonCommand.get("service").toString();
                     jsonCommand.remove("service");
-                    String url = findActionListUrl(service) + "/" + service;
+                    jsonCommand.put("id", mRequestId);
 
+                    String url = findActionListUrl(service) + "/" + service;
+                    Log.d(TAG, "RequestCommand:  " + command);
                     Log.d(TAG, "Request:  " + jsonCommand.toString());
-                    responseJson = SimpleHttpClient.httpPost(url, jsonCommand.toString());
+                    if(command != "getEvent") {
+                        responseJson = SimpleHttpClient.httpPost(url, jsonCommand.toString());
+                    } else {
+                        int longPollingTimeout = (params.getBoolean(0)) ? 20000 : 8000; // msec
+                        responseJson = SimpleHttpClient.httpPost(url, jsonCommand.toString(), longPollingTimeout);
+                    }
+
                     Log.d(TAG, "Response: " + responseJson);
 
                 } catch (IOException e) {
@@ -79,20 +97,33 @@ public class ApiThreadBuilder {
 
 
                 }
+                mRequestId++;
                 return responseJson;
             }
         });
 
         String response = null;
+        JSONObject jsonResponse = null;
         try {
             response = future.get();
+            jsonResponse = new JSONObject(response);
+            if(threadCallback != null) {
+                threadCallback.threadFinished(jsonResponse); 
+            }
+            threadCallback = null;
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
         }
 
-        return response;
+
+        
+
+        return jsonResponse;
     }
 
     /**
@@ -130,7 +161,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getAvailableApiList() throws IOException {
+    public JSONObject getAvailableApiList() throws IOException {
         return sendCommandString("getAvailableApiList", new JSONArray());
     }
 
@@ -151,7 +182,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getApplicationInfo() throws IOException {
+    public JSONObject getApplicationInfo() throws IOException {
         return sendCommandString("getApplicationInfo", new JSONArray());
     }
 
@@ -172,7 +203,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getShootMode() throws IOException {
+    public JSONObject getShootMode() throws IOException {
         return sendCommandString("getShootMode", new JSONArray());
     }
 
@@ -194,7 +225,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String setShootMode(String shootMode) throws IOException {
+    public JSONObject setShootMode(String shootMode) throws IOException {
         JSONArray param = new JSONArray();
         param.put(shootMode);
         return sendCommandString("setShootMode", param);
@@ -216,7 +247,7 @@ public class ApiThreadBuilder {
      * @return JSON data of response
      * @throws IOException - all errors and exception are wrapped by this Exception.
      */
-    public String getAvailableShootMode() throws IOException {
+    public JSONObject getAvailableShootMode() throws IOException {
         return sendCommandString("getAvailableShootMode", new JSONArray());
     }
 
@@ -237,7 +268,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getSupportedShootMode() throws IOException {
+    public JSONObject getSupportedShootMode() throws IOException {
         return sendCommandString("getSupportedShootMode", new JSONArray());
     }
 
@@ -258,7 +289,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String startContShooting() throws IOException {
+    public JSONObject startContShooting() throws IOException {
         return sendCommandString("startContShooting", new JSONArray());
     }
 
@@ -279,7 +310,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String stopContShooting() throws IOException {
+    public JSONObject stopContShooting() throws IOException {
         return sendCommandString("stopContShooting", new JSONArray());
     }
 
@@ -300,7 +331,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String startBulbShooting() throws IOException {
+    public JSONObject startBulbShooting() throws IOException {
         return sendCommandString("startBulbShooting", new JSONArray());
     }
 
@@ -321,7 +352,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String stopBulbShooting() throws IOException {
+    public JSONObject stopBulbShooting() throws IOException {
         return sendCommandString("stopBulbShooting", new JSONArray());
     }
 
@@ -342,7 +373,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String startLiveview() throws IOException {
+    public JSONObject startLiveview() throws IOException {
         return sendCommandString("startLiveview", new JSONArray());
     }
 
@@ -363,7 +394,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String stopLiveview() throws IOException {
+    public JSONObject stopLiveview() throws IOException {
         return sendCommandString("stopLiveview", new JSONArray());
     }
 
@@ -384,7 +415,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String startRecMode() throws IOException {
+    public JSONObject startRecMode() throws IOException {
         return sendCommandString("startRecMode", new JSONArray());
     }
 
@@ -405,7 +436,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String stopRecMode() throws IOException {
+    public JSONObject stopRecMode() throws IOException {
         return sendCommandString("stopRecMode", new JSONArray());
     }
 
@@ -425,7 +456,7 @@ public class ApiThreadBuilder {
      * @return JSON data of response
      * @throws IOException
      */
-    public String actHalfPressShutter() throws IOException {
+    public JSONObject actHalfPressShutter() throws IOException {
         return sendCommandString("actHalfPressShutter", new JSONArray());
     }
 
@@ -445,7 +476,7 @@ public class ApiThreadBuilder {
      * @return JSON data of response
      * @throws IOException
      */
-    public String actTakePicture() throws IOException {
+    public JSONObject actTakePicture() throws IOException {
         return sendCommandString("actTakePicture", new JSONArray());
     }
 
@@ -468,7 +499,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String startMovieRec() throws IOException {
+    public JSONObject startMovieRec() throws IOException {
         return sendCommandString("startMovieRec", new JSONArray());
     }
 
@@ -489,7 +520,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String stopMovieRec() throws IOException {
+    public JSONObject stopMovieRec() throws IOException {
         return sendCommandString("stopMovieRec", new JSONArray());
     }
 
@@ -512,7 +543,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String actZoom(String direction, String movement) throws IOException {
+    public JSONObject actZoom(String direction, String movement) throws IOException {
         JSONArray param = new JSONArray();
         param.put(direction).put(movement);
         return sendCommandString("actZoom", param);
@@ -536,7 +567,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getEvent(boolean longPollingFlag) throws IOException {
+    public JSONObject getEvent(boolean longPollingFlag) throws IOException {
         JSONArray param = new JSONArray();
         param.put(longPollingFlag);
         return sendCommandString("getEvent", param);
@@ -560,7 +591,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String setCameraFunction(String cameraFunction) throws IOException {
+    public JSONObject setCameraFunction(String cameraFunction) throws IOException {
         JSONArray param = new JSONArray();
         param.put(cameraFunction);
         return sendCommandString("setCameraFunction", param);
@@ -583,7 +614,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getCameraMethodTypes() throws IOException {
+    public JSONObject getCameraMethodTypes() throws IOException {
         return sendCommandString("getCameraMethodTypes", new JSONArray());
     }
 
@@ -606,7 +637,7 @@ public class ApiThreadBuilder {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public String getAvcontentMethodTypes() throws IOException {
+    public JSONObject getAvcontentMethodTypes() throws IOException {
         return sendCommandString("getAvcontentMethodTypes", new JSONArray());
     }
 
@@ -628,7 +659,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getSchemeList() throws IOException {
+    public JSONObject getSchemeList() throws IOException {
         return sendCommandString("getSchemeList", new JSONArray());
     }
 
@@ -653,7 +684,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getSourceList(String scheme) throws IOException {
+    public JSONObject getSourceList(String scheme) throws IOException {
         JSONArray param = new JSONArray();
         param.put(scheme);
         return sendCommandString("getSourceList", param);
@@ -682,7 +713,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getContentList(JSONArray params) throws IOException {
+    public JSONObject getContentList(JSONArray params) throws IOException {
         return sendCommandString("getContentList", new JSONArray());
     }
 
@@ -708,7 +739,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String setStreamingContent(String uri) throws IOException {
+    public JSONObject setStreamingContent(String uri) throws IOException {
         JSONArray param = new JSONArray();
         param.put(uri);
         return sendCommandString("setStreamingContent", param);
@@ -732,7 +763,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String startStreaming() throws IOException {
+    public JSONObject startStreaming() throws IOException {
         return sendCommandString("startStreaming", new JSONArray());
     }
 
@@ -754,7 +785,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String stopStreaming() throws IOException {
+    public JSONObject stopStreaming() throws IOException {
         return sendCommandString("stopStreaming", new JSONArray());
     }
 
@@ -792,7 +823,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String startLiveviewWithSize(String liveViewSize) throws IOException {
+    public JSONObject startLiveviewWithSize(String liveViewSize) throws IOException {
         return sendCommandString("startLiveviewWithSize", new JSONArray());
     }
 
@@ -817,7 +848,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getLiveviewSize() throws IOException {
+    public JSONObject getLiveviewSize() throws IOException {
         return sendCommandString("getLiveviewSize", new JSONArray());
     }
 
@@ -842,7 +873,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getSupportedLiveviewSize() throws IOException {
+    public JSONObject getSupportedLiveviewSize() throws IOException {
         return sendCommandString("getSupportedLiveviewSize", new JSONArray());
     }
 
@@ -867,7 +898,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getAvailableLiveviewSize() throws IOException {
+    public JSONObject getAvailableLiveviewSize() throws IOException {
         return sendCommandString("getAvailableLiveviewSize", new JSONArray());
     }
 
@@ -891,7 +922,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String setTouchAFPosition(double xPos, double yPos) throws IOException {
+    public JSONObject setTouchAFPosition(double xPos, double yPos) throws IOException {
         JSONArray param;
         try{
             param = new JSONArray();
@@ -921,7 +952,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getTouchAFPosition() throws IOException {
+    public JSONObject getTouchAFPosition() throws IOException {
         return sendCommandString("getTouchAFPosition", new JSONArray());
     }
 
@@ -944,7 +975,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String cancelTouchAFPosition() throws IOException {
+    public JSONObject cancelTouchAFPosition() throws IOException {
         return sendCommandString("cancelTouchAFPosition", new JSONArray());
     }
 
@@ -967,7 +998,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String setSelfTimer(int time) throws IOException {
+    public JSONObject setSelfTimer(int time) throws IOException {
         JSONArray param = new JSONArray();
         param.put(time);
         return sendCommandString("setSelfTimer", param);
@@ -991,7 +1022,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getSelfTimer() throws IOException {
+    public JSONObject getSelfTimer() throws IOException {
         return sendCommandString("getSelfTimer", new JSONArray());
     }
 
@@ -1013,7 +1044,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getSupportedSelfTimer() throws IOException {
+    public JSONObject getSupportedSelfTimer() throws IOException {
         return sendCommandString("getSupportedSelfTimer", new JSONArray());
     }
 
@@ -1035,7 +1066,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String getAvailableSelfTimer() throws IOException {
+    public JSONObject getAvailableSelfTimer() throws IOException {
         return sendCommandString("getAvailableSelfTimer", new JSONArray());
     }
 
@@ -1064,7 +1095,7 @@ public class ApiThreadBuilder {
      *                     Exception.
      */
 
-    public String setExposureMode(String exposureMode) throws IOException {
+    public JSONObject setExposureMode(String exposureMode) throws IOException {
         JSONArray param = new JSONArray();
         param.put(exposureMode);
         return sendCommandString("setExposureMode", param);
@@ -1087,7 +1118,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getExposureMode() throws IOException {
+    public JSONObject getExposureMode() throws IOException {
         return sendCommandString("getExposureMode", new JSONArray());
     }
 
@@ -1109,7 +1140,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedExposureMode() throws IOException {
+    public JSONObject getSupportedExposureMode() throws IOException {
         return sendCommandString("getSupportedExposureMode", new JSONArray());
     }
 
@@ -1131,7 +1162,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableExposureMode() throws IOException {
+    public JSONObject getAvailableExposureMode() throws IOException {
         return sendCommandString("getAvailableExposureMode", new JSONArray());
     }
 
@@ -1153,7 +1184,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setFocusMode(String focusMode) throws IOException {
+    public JSONObject setFocusMode(String focusMode) throws IOException {
         JSONArray param = new JSONArray();
         param.put(focusMode);
         return sendCommandString("setFocusMode", param);
@@ -1177,7 +1208,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getFocusMode() throws IOException {
+    public JSONObject getFocusMode() throws IOException {
         return sendCommandString("getFocusMode", new JSONArray());
     }
 
@@ -1199,7 +1230,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedFocusMode() throws IOException {
+    public JSONObject getSupportedFocusMode() throws IOException {
         return sendCommandString("getSupportedFocusMode", new JSONArray());
     }
 
@@ -1221,7 +1252,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableFocusMode() throws IOException {
+    public JSONObject getAvailableFocusMode() throws IOException {
         return sendCommandString("getAvailableFocusMode", new JSONArray());
     }
 
@@ -1243,7 +1274,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setExposureCompensation(int exposureComp) throws IOException {
+    public JSONObject setExposureCompensation(int exposureComp) throws IOException {
         JSONArray param = new JSONArray();
         param.put(exposureComp);
         return sendCommandString("setExposureCompensation", param);
@@ -1267,7 +1298,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getExposureCompensation() throws IOException {
+    public JSONObject getExposureCompensation() throws IOException {
         return sendCommandString("getExposureCompensation", new JSONArray());
     }
 
@@ -1289,7 +1320,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedExposureCompensation() throws IOException {
+    public JSONObject getSupportedExposureCompensation() throws IOException {
         return sendCommandString("getSupportedExposureCompensation", new JSONArray());
     }
 
@@ -1311,7 +1342,7 @@ public class ApiThreadBuilder {
          *             Exception.
          */
 
-        public String getAvailableExposureCompensation() throws IOException {
+        public JSONObject getAvailableExposureCompensation() throws IOException {
             return sendCommandString("getAvailableExposureCompensation", new JSONArray());
         }
 
@@ -1333,7 +1364,7 @@ public class ApiThreadBuilder {
          *             Exception.
          */
 
-    public String setFNumber(String fNumber) throws IOException {
+    public JSONObject setFNumber(String fNumber) throws IOException {
         JSONArray param = new JSONArray();
         param.put(fNumber);
         return sendCommandString("setFNumber", param);
@@ -1357,7 +1388,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getFNumber() throws IOException {
+    public JSONObject getFNumber() throws IOException {
         return sendCommandString("getFNumber", new JSONArray());
     }
 
@@ -1379,7 +1410,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedFNumber() throws IOException {
+    public JSONObject getSupportedFNumber() throws IOException {
         return sendCommandString("getSupportedFNumber", new JSONArray());
     }
 
@@ -1401,7 +1432,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableFNumber() throws IOException {
+    public JSONObject getAvailableFNumber() throws IOException {
         return sendCommandString("getAvailableFNumber", new JSONArray());
     }
 
@@ -1423,7 +1454,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setShutterSpeed(String shutterSpeed) throws IOException {
+    public JSONObject setShutterSpeed(String shutterSpeed) throws IOException {
         JSONArray param = new JSONArray();
         param.put(shutterSpeed);
         return sendCommandString("setShutterSpeed", param);
@@ -1447,7 +1478,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getShutterSpeed() throws IOException {
+    public JSONObject getShutterSpeed() throws IOException {
         return sendCommandString("getShutterSpeed", new JSONArray());
     }
 
@@ -1469,7 +1500,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedShutterSpeed() throws IOException {
+    public JSONObject getSupportedShutterSpeed() throws IOException {
         return sendCommandString("getSupportedShutterSpeed", new JSONArray());
     }
 
@@ -1491,7 +1522,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableShutterSpeed() throws IOException {
+    public JSONObject getAvailableShutterSpeed() throws IOException {
         return sendCommandString("getAvailableShutterSpeed", new JSONArray());
     }
 
@@ -1513,7 +1544,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setIsoSpeedRate(String isoSpeed) throws IOException {
+    public JSONObject setIsoSpeedRate(String isoSpeed) throws IOException {
         JSONArray param = new JSONArray();
         param.put(isoSpeed);
         return sendCommandString("setIsoSpeedRate", param);
@@ -1537,7 +1568,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getIsoSpeedRate() throws IOException {
+    public JSONObject getIsoSpeedRate() throws IOException {
         return sendCommandString("getIsoSpeedRate", new JSONArray());
     }
 
@@ -1559,7 +1590,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedIsoSpeedRate() throws IOException {
+    public JSONObject getSupportedIsoSpeedRate() throws IOException {
         return sendCommandString("getSupportedIsoSpeedRate", new JSONArray());
     }
 
@@ -1581,7 +1612,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableIsoSpeedRate() throws IOException {
+    public JSONObject getAvailableIsoSpeedRate() throws IOException {
         return sendCommandString("getAvailableIsoSpeedRate", new JSONArray());
     }
 
@@ -1603,7 +1634,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setWhiteBalance(String mode, boolean enabled, int colorTemp) throws IOException {
+    public JSONObject setWhiteBalance(String mode, boolean enabled, int colorTemp) throws IOException {
         JSONArray param = new JSONArray();
         param.put(mode).put(enabled).put(colorTemp);
         return sendCommandString("setWhiteBalance", param);
@@ -1627,7 +1658,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getWhiteBalance() throws IOException {
+    public JSONObject getWhiteBalance() throws IOException {
         return sendCommandString("getWhiteBalance", new JSONArray());
     }
 
@@ -1649,7 +1680,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedWhiteBalance() throws IOException {
+    public JSONObject getSupportedWhiteBalance() throws IOException {
         return sendCommandString("getSupportedWhiteBalance", new JSONArray());
     }
 
@@ -1671,7 +1702,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableWhiteBalance() throws IOException {
+    public JSONObject getAvailableWhiteBalance() throws IOException {
         return sendCommandString("getAvailableWhiteBalance", new JSONArray());
     }
 
@@ -1693,7 +1724,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setProgramShift(int shift) throws IOException {
+    public JSONObject setProgramShift(int shift) throws IOException {
         JSONArray param = new JSONArray();
         param.put(shift);
         return sendCommandString("setProgramShift", param);
@@ -1717,7 +1748,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedProgramShift() throws IOException {
+    public JSONObject getSupportedProgramShift() throws IOException {
         return sendCommandString("getSupportedProgramShift", new JSONArray());
     }
 
@@ -1739,7 +1770,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setFlashMode(String flashMode) throws IOException {
+    public JSONObject setFlashMode(String flashMode) throws IOException {
         JSONArray param = new JSONArray();
         param.put(flashMode);
         return sendCommandString("setFlashMode", param);
@@ -1763,7 +1794,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getFlashMode() throws IOException {
+    public JSONObject getFlashMode() throws IOException {
         return sendCommandString("getFlashMode", new JSONArray());
     }
 
@@ -1785,7 +1816,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedFlashMode() throws IOException {
+    public JSONObject getSupportedFlashMode() throws IOException {
         return sendCommandString("getSupportedFlashMode", new JSONArray());
     }
 
@@ -1807,7 +1838,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailableFlashMode() throws IOException {
+    public JSONObject getAvailableFlashMode() throws IOException {
         return sendCommandString("getAvailableFlashMode", new JSONArray());
     }
 
@@ -1829,7 +1860,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String setPostviewImageSize() throws IOException {
+    public JSONObject setPostviewImageSize() throws IOException {
         return sendCommandString("setPostviewImageSize", new JSONArray());
     }
 
@@ -1851,7 +1882,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getPostviewImageSize() throws IOException {
+    public JSONObject getPostviewImageSize() throws IOException {
         return sendCommandString("getPostviewImageSize", new JSONArray());
     }
 
@@ -1873,7 +1904,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getSupportedPostviewImageSize() throws IOException {
+    public JSONObject getSupportedPostviewImageSize() throws IOException {
         return sendCommandString("getSupportedPostviewImageSize", new JSONArray());
     }
 
@@ -1895,7 +1926,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getAvailablePostviewImageSize() throws IOException {
+    public JSONObject getAvailablePostviewImageSize() throws IOException {
         return sendCommandString("getAvailablePostviewImageSize", new JSONArray());
     }
 
@@ -1917,7 +1948,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getVersions() throws IOException {
+    public JSONObject getVersions() throws IOException {
         return sendCommandString("getVersions", new JSONArray());
     }
 
@@ -1939,7 +1970,7 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getMethodTypes() throws IOException {
+    public JSONObject getMethodTypes() throws IOException {
         return sendCommandString("getMethodTypes", new JSONArray());
     }
 
@@ -1961,8 +1992,10 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getEventv1_0() throws IOException {
-        return sendCommandString("getEventv1_0", new JSONArray());
+    public JSONObject getEventv1_0(boolean longPollingFlag) throws IOException {
+        JSONArray param = new JSONArray();
+        param.put(longPollingFlag);
+        return sendCommandString("getEventv1_0", param);
     }
 
     /**
@@ -1983,8 +2016,10 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getEventv1_1() throws IOException {
-        return sendCommandString("getEventv1_1", new JSONArray());
+    public JSONObject getEventv1_1(boolean longPollingFlag) throws IOException {
+        JSONArray param = new JSONArray();
+        param.put(longPollingFlag);
+        return sendCommandString("getEventv1_1", param);
     }
 
     /**
@@ -2005,7 +2040,9 @@ public class ApiThreadBuilder {
      *             Exception.
      */
 
-    public String getEventv1_2() throws IOException {
-        return sendCommandString("getEventv1_2", new JSONArray());
+    public JSONObject getEventv1_2(boolean longPollingFlag) throws IOException {
+        JSONArray param = new JSONArray();
+        param.put(longPollingFlag);
+        return sendCommandString("getEventv1_2", param);
     }
 }
