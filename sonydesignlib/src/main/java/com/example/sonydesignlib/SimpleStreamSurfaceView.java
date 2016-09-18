@@ -1,25 +1,12 @@
-package com.keysersoze.sonyandroidlib;
+package com.example.sonydesignlib;
 
 import sony.sdk.cameraremote.utils.SimpleLiveviewSlicer;
 import sony.sdk.cameraremote.utils.SimpleLiveviewSlicer.Payload;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import com.keysersoze.sonyandroidlib.ViewFinderLayout;
-import com.keysersoze.sonyandroidlib.ViewFinderLayout.StreamErrorListener;
 
 /**
  * A SurfaceView based class to draw liveview frames serially.
@@ -28,7 +15,7 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
 
     private static final String TAG = SimpleStreamSurfaceView.class.getSimpleName();
 
-    private StreamErrorListener mErrorListener;
+    private ViewFinderLayout.StreamErrorListener mErrorListener;
 
     private ViewFinderLayout viewFinderLayout;
 
@@ -92,7 +79,7 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
      * @return true if the starting is completed successfully, false otherwise.
      * @see SimpleLiveviewSurfaceView#bindRemoteApi(SimpleRemoteApi)
      */
-    public boolean start(final String streamUrl, StreamErrorListener listener) {
+    public boolean start(final String streamUrl, ViewFinderLayout.StreamErrorListener listener) {
         
         viewFinderLayout.setStreamErrorListener(listener);
         viewFinderLayout.setStreamUrl(streamUrl);

@@ -1,4 +1,4 @@
-package com.keysersoze.sonyandroidlib.widgets;
+package com.example.sonydesignlib.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;

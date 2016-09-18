@@ -1,19 +1,15 @@
 /*
  * Copyright 2014 Sony Corporation
  */
-package com.keysersoze.sonyandroidlib;
+package com.example.sonydesignlib;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.graphics.Rect;
 import android.graphics.Bitmap;
