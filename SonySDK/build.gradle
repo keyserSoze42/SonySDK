@@ -19,10 +19,6 @@ idea {
     }
 }
 
-ext {
-    androidCompileVersion = 23
-}
-
 configurations {
     provided
     compile.extendsFrom provided
@@ -38,7 +34,8 @@ sourceSets {
 }
 
 dependencies {
-    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-${project.ext.androidCompileVersion}/android.jar")
+    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-${rootProject.ext.androidCompileVersion}/android.jar")
+    compile group: 'org.json', name: 'json', version: '20170516'
 }
 
 gradle.projectsEvaluated {

@@ -2,6 +2,7 @@
 
 ext{
 	version = "2.30"
+    androidCompileVersion = 23
 }
 
 buildscript {
@@ -9,13 +10,14 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:2.3.2'
     }
 }
 
 allprojects {
     repositories {
         mavenCentral()
+        mavenLocal()
         jcenter()
     }
 }
@@ -30,16 +32,14 @@ subprojects {
             source = sourceSets.main.java.srcDirs
             destinationDir = file("build/docs/javadoc/")
             javadoc.destinationDir = file("${project.buildDir}/docs/javadoc/")
-            javadoc.classpath += files(System.getenv("ANDROID_HOME") + "/platforms/android-23/android.jar")
+            javadoc.classpath += files(System.getenv("ANDROID_HOME") + "/platforms/android-${rootProject.ext.androidCompileVersion}/android.jar")
 
         }
         //assemble.finalizedBy buildJavadoc
     }
-
-
 }
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.14'
+    gradleVersion = '3.5'
 }

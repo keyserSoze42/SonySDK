@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import keysersoze.com.BracketCameraControllerAPI;
 import sony.sdk.cameraremote.ServerDevice;
 import sony.sdk.cameraremote.SimpleCameraEventObserver;
 import sony.sdk.cameraremote.SimpleRemoteApi;
@@ -30,7 +31,7 @@ import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 /**
  * Created by aaron on 5/29/15.
  */
-public class CameraConnectionController {
+public class CameraConnectionController implements BracketCameraControllerAPI {
 
     private boolean connectionStatus = false;
     private String cameraAddress;
@@ -103,7 +104,7 @@ public class CameraConnectionController {
         mEventObserver.activate();
     }
 
-    public static void onFinished() {
+    public void onFinished() {
         openConnection();
 
     }
@@ -117,6 +118,7 @@ public class CameraConnectionController {
         });
     }
 
+    @Override
     public String startLiveview() {
         String liveViewUrl = null;
 
@@ -157,6 +159,7 @@ public class CameraConnectionController {
         return liveViewUrl;
     }
 
+    @Override
     public void stopLiveview() {
         new Thread() {
             @Override
@@ -244,7 +247,9 @@ public class CameraConnectionController {
      * Open connection to the camera device to start monitoring Camera events
      * and showing liveview.
      */
-    public static void openConnection() {
+
+    @Override
+    public void openConnection() {
 
         mEventObserver.setEventChangeListener(mEventListener);
         new Thread() {
@@ -354,7 +359,8 @@ public class CameraConnectionController {
     /**
      * Stop monitoring Camera events and close liveview connection.
      */
-    private void closeConnection() {
+    @Override
+    public void closeConnection() {
 
         Log.d(TAG, "closeConnection(): exec.");
         // Liveview stop

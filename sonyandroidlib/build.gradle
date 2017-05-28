@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.0"
+    compileSdkVersion rootProject.ext.androidCompileVersion
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 23
+        minSdkVersion rootProject.ext.androidCompileVersion
+        targetSdkVersion rootProject.ext.androidCompileVersion
         versionCode 1
         versionName "1.0"
 
@@ -27,7 +27,8 @@ dependencies {
     compile project(':SonySDK')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.github.rey5137:material:1.2.4'
-    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-23/android.jar")
+    provided files(System.getenv("ANDROID_HOME") + "/platforms/android-${rootProject.ext.androidCompileVersion}/android.jar")
+    compile 'bracket.libs.api:bracketcameraAPI:1.0.0'
 
 }
 
