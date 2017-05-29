@@ -3,6 +3,7 @@ package com.keysersoze.sonyandroidlib;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -24,6 +25,7 @@ import keysersoze.com.BracketCameraControllerAPI;
 import sony.sdk.cameraremote.ServerDevice;
 import sony.sdk.cameraremote.SimpleCameraEventObserver;
 import sony.sdk.cameraremote.SimpleRemoteApi;
+import sony.sdk.cameraremote.SimpleSsdpClient;
 import sony.sdk.cameraremote.utils.thread.ThreadPoolHelper;
 
 import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
@@ -31,12 +33,12 @@ import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 /**
  * Created by aaron on 5/29/15.
  */
-public class CameraConnectionController implements BracketCameraControllerAPI {
+public class SonyCameraController implements BracketCameraControllerAPI {
 
     private boolean connectionStatus = false;
     private String cameraAddress;
 
-    private static final String TAG = "ConnectionController";
+    private static final String TAG = "SonyCameraController";
 
     private ServerDevice serverDevice;
     private static SimpleCameraEventObserver.ChangeListener mEventListener;
@@ -49,18 +51,18 @@ public class CameraConnectionController implements BracketCameraControllerAPI {
     private static CameraConnectionHandler connectionHandler;
     private static ThreadPoolHelper threadPoolHelper;
     private Context context;
+    private SimpleSsdpClient ssdpClient;
 
-    public CameraConnectionController(Context context, CameraConnectionHandler connectionHandler) {
+    public SonyCameraController(Context context, CameraConnectionHandler connectionHandler) {
         this.context = context;
         this.connectionHandler = connectionHandler;
-        mRemoteApi = SimpleRemoteApi.getInstance();
         threadPoolHelper = ThreadPoolHelper.getInstance();
     }
 
     /*
      * Interface for SSDP
      */
-    public void onDeviceFound(ServerDevice serverDevice) {
+    public void cameraDeviceFound(ServerDevice serverDevice) {
         final String deviceAddress = serverDevice.getDDUrl();
         cameraAddress = deviceAddress;
         this.serverDevice = serverDevice;
@@ -173,6 +175,119 @@ public class CameraConnectionController implements BracketCameraControllerAPI {
         }.start();
     }
 
+    @Override
+    public void setIso(String isoSpeed) {
+        try {
+            mRemoteApi.setIsoSpeedRate(isoSpeed);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setShutterSpeed(String shutterSpeed) {
+        try {
+            mRemoteApi.setShutterSpeed(shutterSpeed);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setFstop(String fstop) {
+        try {
+            mRemoteApi.setFNumber(fstop);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String getIso() {
+        String iso = "UNKNOWN";
+        try {
+            JSONObject isoResult = mRemoteApi.getIsoSpeedRate();
+            iso = (String) isoResult.getJSONArray("result").get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return iso;
+    }
+
+    @Override
+    public String getShutterSpeed() {
+        String shutterSpeed = "UNKNOWN";
+        try {
+            JSONObject isoResult = mRemoteApi.getShutterSpeed();
+            shutterSpeed = (String) isoResult.getJSONArray("result").get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return shutterSpeed;
+    }
+
+    @Override
+    public String getFstop() {
+        String fstop = "UNKNOWN";
+        try {
+            JSONObject isoResult = mRemoteApi.getFNumber();
+            fstop = (String) isoResult.getJSONArray("result").get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return fstop;
+
+    }
+
+    @Override
+    public String getCameraState() {
+        JSONArray supportedVersions;
+        String latestVersion = "1.0";
+
+        try {
+            JSONObject versionResult = mRemoteApi.getVersions();
+            supportedVersions = versionResult.getJSONArray("result");
+            latestVersion = (String) supportedVersions.get(supportedVersions.length()-1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject eventObject = null;
+        try {
+            switch (latestVersion) {
+                case "1.1":
+                    eventObject = mRemoteApi.getEventv1_1(false);
+                case "1.2":
+                    eventObject = mRemoteApi.getEventv1_2(false);
+                default:
+                    eventObject = mRemoteApi.getEventv1_0(false);
+            }
+        }catch (IOException e) {
+
+        }
+
+        String cameraStatus = "UNKNOWN";
+        try {
+            if(eventObject != null){
+                JSONArray eventResult = eventObject.getJSONArray("cameraStatus");
+                cameraStatus = eventResult.getString(0);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return cameraStatus;
+    }
+
     /**
      * Check the shooting mode
      */
@@ -250,12 +365,20 @@ public class CameraConnectionController implements BracketCameraControllerAPI {
 
     @Override
     public void openConnection() {
-
-        mEventObserver.setEventChangeListener(mEventListener);
-        new Thread() {
+        if(ssdpClient == null){
+            ssdpClient = new SimpleSsdpClient();
+        }
+        SimpleSsdpClient.SearchResultHandler searchResultHandler = new SimpleSsdpClient.SearchResultHandler() {
+            @Override
+            public void onDeviceFound(ServerDevice serverDevice) {
+                mRemoteApi = SimpleRemoteApi.getInstance();
+                mRemoteApi.init(serverDevice);
+                cameraDeviceFound(serverDevice);
+            }
 
             @Override
-            public void run() {
+            public void onFinished() {
+                mEventObserver.setEventChangeListener(mEventListener);
                 Log.d(TAG, "openConnection(): exec.");
 
                 try {
@@ -270,11 +393,11 @@ public class CameraConnectionController implements BracketCameraControllerAPI {
                         Log.d(TAG, "openConnection(): getApplicationInfo()");
                         replyJson = mRemoteApi.getApplicationInfo();
 /*                        if (!IsSupportedUtil.isSupportedServerVersion(replyJson)) {
-                            DisplayHelper.toast(getApplicationContext(), //
-                                    R.string.msg_error_non_supported_device);
-                            SampleCameraActivity.this.finish();
-                            return;
-                        }*/
+                    DisplayHelper.toast(getApplicationContext(), //
+                            R.string.msg_error_non_supported_device);
+                    SampleCameraActivity.this.finish();
+                    return;
+                }*/
                     } else {
                         // never happens;
                         return;
@@ -304,7 +427,14 @@ public class CameraConnectionController implements BracketCameraControllerAPI {
                     Log.w(TAG, "openConnection : IOException: " + e.getMessage());
                 }
             }
-        }.start();
+
+            @Override
+            public void onErrorFinished() {
+                Log.w(TAG, "openConnection : Error Finished");
+
+            }
+        };
+        ssdpClient.search(searchResultHandler);
 
     }
 

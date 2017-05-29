@@ -209,6 +209,12 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
+     * "still" Still image shoot mode
+     * "movie" Movie shoot mode
+     * "audio" Audio shoot mode
+     * "intervalstill" Interval still shoot mode
+     * "looprec" Loop recording shoot mode
+     *
      * @param shootMode shoot mode (ex. "still")
      * @return JSON data of response
      * @throws IOException all errors and exception are wrapped by this
@@ -800,6 +806,8 @@ public class SimpleRemoteApi {
      *   "version": "1.0"
      * }
      * </pre>
+     * "Remote Shooting" Shooting function
+     * "Contents Transfer" Transferring images function
      *
      * @param cameraFunction camera function to set
      * @return JSON data of response
@@ -1703,23 +1711,29 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setFocusMode",
-     *   "params": [],
+     *   "params": [String focusMode],
      *   "id": 1,
      *   "version": "1.0"
      * }
      * </pre>
+     * "AF-S" Single AF
+     * "AF-C" Continuous AF
+     * "DMF" Direct Manual Focus
+     * "MF" Manual Focus
+     *
      *
      * @return JSONObject - Returns 0 on success or error code on failure for Focus Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
 
-    public JSONObject setFocusMode() throws IOException {
+    public JSONObject setFocusMode(String focusMode) throws IOException {
         String service = "camera";
         try {
-
+            JSONArray focusModeSetting = new JSONArray();
+            focusModeSetting.put(focusMode);
             JSONObject requestJson =
-                    new JSONObject().put("method", "setFocusMode").put("params", new JSONArray())
+                    new JSONObject().put("method", "setFocusMode").put("params", focusModeSetting)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -2267,7 +2281,7 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setIsoSpeedRate",
-     *   "params": [],
+     *   "params": [String isoSpeedRate],
      *   "id": 1,
      *   "version": "1.0"
      * }
@@ -2278,12 +2292,16 @@ public class SimpleRemoteApi {
      *             Exception.
      */
 
-    public JSONObject setIsoSpeedRate() throws IOException {
+    public JSONObject setIsoSpeedRate(String isoSpeedRate) throws IOException {
         String service = "camera";
+        JSONArray isoSpeed = new JSONArray();
+        isoSpeed.put(isoSpeedRate);
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "setIsoSpeedRate").put("params", new JSONArray())
-                            .put("id", id()).put("version", "1.0");
+                    new JSONObject().put("method", "setIsoSpeedRate")
+                            .put("params", isoSpeed)
+                            .put("id", id())
+                            .put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
             log("Request:  " + requestJson.toString());
@@ -2407,7 +2425,7 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setWhiteBalance",
-     *   "params": [],
+     *   "params": [String whiteBalance, boolean enableColorTemp, int colorTemp],
      *   "id": 1,
      *   "version": "1.0"
      * }
@@ -2418,11 +2436,15 @@ public class SimpleRemoteApi {
      *             Exception.
      */
 
-    public JSONObject setWhiteBalance() throws IOException {
+    public JSONObject setWhiteBalance(String whiteBalance, boolean enableColorTemp, int colorTemp) throws IOException {
         String service = "camera";
+        JSONArray whiteBalanceSettings = new JSONArray();
+        whiteBalanceSettings.put(whiteBalance);
+        whiteBalanceSettings.put(enableColorTemp);
+        whiteBalanceSettings.put(colorTemp);
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "setWhiteBalance").put("params", new JSONArray())
+                    new JSONObject().put("method", "setWhiteBalance").put("params", whiteBalanceSettings)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -2547,7 +2569,7 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setProgramShift",
-     *   "params": [],
+     *   "params": [String programShiftAmount],
      *   "id": 1,
      *   "version": "1.0"
      * }
@@ -2558,11 +2580,13 @@ public class SimpleRemoteApi {
      *             Exception.
      */
 
-    public JSONObject setProgramShift() throws IOException {
+    public JSONObject setProgramShift(String programShiftAmount) throws IOException {
         String service = "camera";
+        JSONArray programShiftSettings = new JSONArray();
+        programShiftSettings.put(programShiftAmount);
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "setProgramShift").put("params", new JSONArray())
+                    new JSONObject().put("method", "setProgramShift").put("params", programShiftSettings)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -2597,8 +2621,10 @@ public class SimpleRemoteApi {
         String service = "camera";
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "getSupportedProgramShift").put("params", new JSONArray())
-                            .put("id", id()).put("version", "1.0");
+                    new JSONObject().put("method", "getSupportedProgramShift")
+                            .put("params", new JSONArray())
+                            .put("id", id())
+                            .put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
             log("Request:  " + requestJson.toString());
@@ -2617,22 +2643,32 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setFlashMode",
-     *   "params": [],
+     *   "params": [String flashMode],
      *   "id": 1,
      *   "version": "1.0"
      * }
      * </pre>
+     *
+     * "off" OFF
+     * "auto" Auto flash
+     * "on" Forced flash
+     * "slowSync" Slow synchro
+     * "rearSync" Rear synchro
+     * "wireless" Wireless
      *
      * @return JSONObject - Returns 0 on success or error code on failure for Flash Mode
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
 
-    public JSONObject setFlashMode() throws IOException {
+    public JSONObject setFlashMode(String flashMode) throws IOException {
         String service = "camera";
+        JSONArray flashModeSettings = new JSONArray();
+        flashModeSettings.put(flashMode);
+
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "setFlashMode").put("params", new JSONArray())
+                    new JSONObject().put("method", "setFlashMode").put("params", flashModeSettings)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -2757,22 +2793,27 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "setPostviewImageSize",
-     *   "params": [],
+     *   "params": [String postViewImageSize],
      *   "id": 1,
      *   "version": "1.0"
      * }
      * </pre>
+     *
+     * "Original" Original size
+     * "2M" 2M-pixel size (the actual size depends on camera models.)
      *
      * @return JSONObject - Returns 0 on success or error code on failure for Postview Image Size
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
 
-    public JSONObject setPostviewImageSize() throws IOException {
+    public JSONObject setPostviewImageSize(String postViewImageSize) throws IOException {
         String service = "camera";
+        JSONArray postViewImageSizeSettings = new JSONArray();
+        postViewImageSizeSettings.put(postViewImageSize);
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "setPostviewImageSize").put("params", new JSONArray())
+                    new JSONObject().put("method", "setPostviewImageSize").put("params", postViewImageSizeSettings)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -2967,22 +3008,28 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "getEvent (v1.0)",
-     *   "params": [],
+     *   "params": [String poll],
      *   "id": 1,
      *   "version": "1.0"
      * }
      * </pre>
+     *
+     * Long polling flag
+     * true: Callback when timeout or change point detection.
+     * false: Callback immediately.
      *
      * @return JSONObject - Returns a string of the current Event (v1.0)
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
 
-    public JSONObject getEventv1_0() throws IOException {
+    public JSONObject getEventv1_0(boolean poll) throws IOException {
         String service = "camera";
+        JSONArray pollSettings = new JSONArray();
+        pollSettings.put(poll);
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "getEvent").put("params", new JSONArray())
+                    new JSONObject().put("method", "getEvent").put("params", pollSettings)
                             .put("id", id()).put("version", "1.0");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -3002,22 +3049,28 @@ public class SimpleRemoteApi {
      * <pre>
      * {
      *   "method": "getEvent (v1.1)",
-     *   "params": [],
+     *   "params": [String poll],
      *   "id": 1,
      *   "version": "1.0"
      * }
      * </pre>
+     *
+     * Long polling flag
+     * true: Callback when timeout or change point detection.
+     * false: Callback immediately.
      *
      * @return JSONObject - Returns a string of the current Event (v1.1)
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
 
-    public JSONObject getEventv1_1() throws IOException {
+    public JSONObject getEventv1_1(boolean poll) throws IOException {
         String service = "camera";
         try {
+            JSONArray pollSettings = new JSONArray();
+            pollSettings.put(poll);
             JSONObject requestJson =
-                    new JSONObject().put("method", "getEvent").put("params", new JSONArray())
+                    new JSONObject().put("method", "getEvent").put("params", pollSettings)
                             .put("id", id()).put("version", "1.1");
             String url = findActionListUrl(service) + "/" + service;
 
@@ -3043,16 +3096,22 @@ public class SimpleRemoteApi {
      * }
      * </pre>
      *
+     * Long polling flag
+     * true: Callback when timeout or change point detection.
+     * false: Callback immediately.
+     *
      * @return JSONObject - Returns a string of the current Event (v1.2)
      * @throws IOException all errors and exception are wrapped by this
      *             Exception.
      */
 
-    public JSONObject getEventv1_2() throws IOException {
+    public JSONObject getEventv1_2(boolean poll) throws IOException {
         String service = "camera";
+        JSONArray pollSettings = new JSONArray();
+        pollSettings.put(poll);
         try {
             JSONObject requestJson =
-                    new JSONObject().put("method", "getEvent").put("params", new JSONArray())
+                    new JSONObject().put("method", "getEvent").put("params", pollSettings)
                             .put("id", id()).put("version", "1.2");
             String url = findActionListUrl(service) + "/" + service;
 
