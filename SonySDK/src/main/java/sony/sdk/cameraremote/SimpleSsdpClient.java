@@ -98,6 +98,7 @@ public class SimpleSsdpClient {
                     packet = new DatagramPacket(sendData, sendData.length, iAddress);
                     // send 3 times
                     Log.i(TAG, "search() Send Datagram packet 3 times.");
+                    Thread.sleep(300);
                     socket.send(packet);
                     Thread.sleep(100);
                     socket.send(packet);
