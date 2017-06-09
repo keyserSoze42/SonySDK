@@ -28,7 +28,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.github.rey5137:material:1.2.4'
     provided files(System.getenv("ANDROID_HOME") + "/platforms/android-${rootProject.ext.androidCompileVersion}/android.jar")
-    compile 'bracket.libs.api:bracketcameraAPI:1.0.0'
+    compile project (':bracketcameraAPI')
 
 }
 
