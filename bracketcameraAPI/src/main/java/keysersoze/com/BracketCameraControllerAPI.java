@@ -46,6 +46,8 @@ public interface BracketCameraControllerAPI {
 
     public void registerResultCallback(ResultCallback resultCallback);
 
+    public void takeSinglePhoto();
+
     public interface CameraConnectionHandler {
         void onCameraConnected();
 

@@ -521,4 +521,13 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     public void registerResultCallback(ResultCallback resultCallback){
         resultCallbacks.add(resultCallback);
     }
+
+    @Override
+    public void takeSinglePhoto() {
+        try {
+            mRemoteApi.actTakePicture();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
