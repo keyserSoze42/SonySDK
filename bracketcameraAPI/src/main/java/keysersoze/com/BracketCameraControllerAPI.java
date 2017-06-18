@@ -55,6 +55,10 @@ public interface BracketCameraControllerAPI {
      */
     public void stopLiveview();
 
+    /**
+     * set the ISO
+     * @param iso
+     */
     public void setIso(String iso);
     public void setShutterSpeed(String shutterSpeed);
     public void setFstop(String fstop);
@@ -69,7 +73,16 @@ public interface BracketCameraControllerAPI {
     public void registerResultCallback(ResultCallback resultCallback);
     public void registerStateChangeCallback(CameraStateChangeCallback stateChangeCallback);
 
+    /**
+     * Take a single photo with the default timeout for the http client
+     */
     public void takeSinglePhoto();
+
+    /**
+     * Take a single photo but pass the shutter speed to use to calculate a time out.
+     * @param shutterspeed
+     */
+    public void takeSinglePhoto(int shutterspeed);
 
     public interface CameraConnectionHandler {
         void onCameraConnected();
