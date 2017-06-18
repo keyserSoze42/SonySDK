@@ -51,12 +51,15 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     private Context context;
     private SimpleSsdpClient ssdpClient;
     private List<ResultCallback> resultCallbacks;
+    private List<CameraStateChangeCallback> stateChangeCallbacks;
+    private int currentCamerastate = BracketCameraControllerAPI.NOT_READY;
 
     public SonyCameraController(Context context, CameraConnectionHandler connectionHandler) {
         this.context = context;
         this.connectionHandler = connectionHandler;
         threadPoolHelper = ThreadPoolHelper.getInstance();
         resultCallbacks = new ArrayList<>();
+        stateChangeCallbacks = new ArrayList<>();
     }
 
     /*
@@ -79,6 +82,10 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             @Override
             public void onCameraStatusChanged(String status) {
                 Log.d(TAG, "onCameraStatusChanged() called: " + status);
+                currentCamerastate = convertCameraState(status);
+                for(CameraStateChangeCallback callback : stateChangeCallbacks) {
+                    callback.onCameraStateChange(currentCamerastate);
+                }
             }
 
             @Override
@@ -257,7 +264,12 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
-    public void getCameraState() {
+    public int getCameraState(){
+        return currentCamerastate;
+    }
+
+    @Override
+    public void updateCameraState() {
         JSONArray supportedVersions;
         String latestVersion = "1.0";
 
@@ -297,8 +309,11 @@ public class SonyCameraController implements BracketCameraControllerAPI {
 
         }
 
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(eventObject);
+        String stringCameraStatus = SonyCameraControllerUtil.parseCameraStatus(eventObject);
+        int cameraStatus = convertCameraState(stringCameraStatus);
+
+        for(CameraStateChangeCallback callback : stateChangeCallbacks) {
+            callback.onCameraStateChange(currentCamerastate);
         }
     }
 
@@ -523,11 +538,97 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
+    public void registerStateChangeCallback(CameraStateChangeCallback stateChangeCallback) {
+        stateChangeCallbacks.add(stateChangeCallback);
+    }
+
+    @Override
     public void takeSinglePhoto() {
         try {
             mRemoteApi.actTakePicture();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private int convertCameraState(String cameraSate) {
+        int intCameraState = 0;
+        switch(cameraSate){
+            case "Error":
+                intCameraState = BracketCameraControllerAPI.ERROR;
+                break;
+            case "NotReady":
+                intCameraState = BracketCameraControllerAPI.NOT_READY;
+                break;
+            case "IDLE":
+                intCameraState = BracketCameraControllerAPI.IDLE;
+                break;
+            case "StillCapturing":
+                intCameraState = BracketCameraControllerAPI.STILL_CAPTURING;
+                break;
+            case "StillSaving":
+                intCameraState = BracketCameraControllerAPI.STILL_SAVING;
+                break;
+            case "MovieWaitRecStart":
+                intCameraState = BracketCameraControllerAPI.MOVIE_WAIT_REC_START;
+                break;
+            case "MovieRecording":
+                intCameraState = BracketCameraControllerAPI.MOVIE_RECORDING;
+                break;
+            case "MovieWaitRecStop":
+                intCameraState = BracketCameraControllerAPI.MOVIE_WAIT_REC_STOP;
+                break;
+            case "MovieSaving":
+                intCameraState = BracketCameraControllerAPI.MOVIE_SAVING;
+                break;
+            case "AudioWaitRecStart":
+                intCameraState = BracketCameraControllerAPI.AUDIO_WAIT_REC_START;
+                break;
+            case "AudioRecording":
+                intCameraState = BracketCameraControllerAPI.AUDIO_RECORDING;
+                break;
+            case "AudioWaitRecStop":
+                intCameraState = BracketCameraControllerAPI.AUDIO_WAIT_REC_STOP;
+                break;
+            case "AudioSaving":
+                intCameraState = BracketCameraControllerAPI.AUDIO_SAVING;
+                break;
+            case "IntervalWaitRecStart":
+                intCameraState = BracketCameraControllerAPI.INTERVAL_WAIT_REC_START;
+                break;
+            case "IntervalRecording":
+                intCameraState = BracketCameraControllerAPI.INTERVAL_RECORDING;
+                break;
+            case "IntervalWaitRecStop":
+                intCameraState = BracketCameraControllerAPI.INTERVAL_WAIT_REC_STOP;
+                break;
+            case "LoopWaitRecStart":
+                intCameraState = BracketCameraControllerAPI.LOOP_WAIT_REC_START;
+                break;
+            case "LoopRecording":
+                intCameraState = BracketCameraControllerAPI.LOOP_RECORDING;
+                break;
+            case "LoopWaitRecStop":
+                intCameraState = BracketCameraControllerAPI.LOOP_WAIT_REC_STOP;
+                break;
+            case "LoopSaving":
+                intCameraState = BracketCameraControllerAPI.LOOP_SAVING;
+                break;
+            case "WhiteBalanceOnePushCapturing":
+                intCameraState = BracketCameraControllerAPI.WHITE_BALANCE_ONE_PUSH_CAPTURING;
+                break;
+            case "ContentsTransfer":
+                intCameraState = BracketCameraControllerAPI.CONTENTS_TRANSFER;
+                break;
+            case "Streaming":
+                intCameraState = BracketCameraControllerAPI.STREAMING;
+                break;
+            case "Deleting":
+                intCameraState = BracketCameraControllerAPI.DELETING;
+                break;
+
+        }
+
+        return intCameraState;
     }
 }
