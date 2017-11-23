@@ -17,6 +17,9 @@ gradle.projectsEvaluated {
     jar.finalizedBy 'publishToMavenLocal'
 }
 
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
 publishing {
     //We should dynamiclly find the GroupID.  In order to do this we need to get the path
 //and split the string to the appropriate parts and conver the / into .

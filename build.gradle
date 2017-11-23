@@ -2,20 +2,22 @@
 
 ext{
 	version = "2.30"
-    androidCompileVersion = 23
+    androidCompileVersion = 27
 }
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
     }
 }
 
 allprojects {
     repositories {
+        google()
         mavenCentral()
         mavenLocal()
         jcenter()
