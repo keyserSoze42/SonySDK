@@ -17,25 +17,18 @@ gradle.projectsEvaluated {
     jar.finalizedBy 'publishToMavenLocal'
 }
 
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-
-publishing {
-    //We should dynamiclly find the GroupID.  In order to do this we need to get the path
-//and split the string to the appropriate parts and conver the / into .
-    def pomGroupId = (project.projectDir.toString()
-            - rootDir.getAbsolutePath().toString()
-            - project.name.toString()).replaceAll('/', '.')
-    pomGroupId = pomGroupId.substring(0, pomGroupId.lastIndexOf('.'))
-    repositories {
-        mavenLocal()
-    }
-    publications {
-        mavenJar(MavenPublication) {
-            groupId 'bracket.libs.api'
-            artifactId project.name
-            version project.ext.version
-            from components.java
+afterEvaluate {
+    publishing {
+        repositories {
+            mavenLocal()
+        }
+        publications {
+            mavenJar(MavenPublication) {
+                groupId 'bracket.libs.api'
+                artifactId project.name
+                version project.ext.version
+                from components.java
+            }
         }
     }
 }

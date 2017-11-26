@@ -42,22 +42,18 @@ gradle.projectsEvaluated {
 	jar.finalizedBy 'publishToMavenLocal'
 }
 
-publishing {
-    //We should dynamiclly find the GroupID.  In order to do this we need to get the path
-//and split the string to the appropriate parts and conver the / into .
-    def pomGroupId = (project.projectDir.toString()
-            - rootDir.getAbsolutePath().toString()
-            - project.name.toString()).replaceAll('/', '.')
-    pomGroupId = pomGroupId.substring(0, pomGroupId.lastIndexOf('.'))
-    repositories {
-        mavenLocal()
-    }
-    publications {
-        mavenJar(MavenPublication) {
-            groupId 'sony.libs.api'
-            artifactId project.name
-            version rootProject.ext.version
-            from components.java
+afterEvaluate {
+    publishing {
+        repositories {
+            mavenLocal()
+        }
+        publications {
+            mavenJar(MavenPublication) {
+                groupId 'sony.libs.api'
+                artifactId project.name
+                version rootProject.ext.version
+                from components.java
+            }
         }
     }
 }

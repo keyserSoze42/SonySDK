@@ -544,26 +544,30 @@ public class SonyCameraController implements BracketCameraControllerAPI {
 
     @Override
     public void takeSinglePhoto() {
+        JSONObject result = null;
         try {
-            mRemoteApi.actTakePicture();
+            result = mRemoteApi.actTakePicture();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        for(ResultCallback callback : resultCallbacks) {
+            callback.resultCallback(result);
         }
     }
 
     @Override
     public void takeSinglePhoto(int shutterspeed) {
         int timeout = shutterspeed;
+        JSONObject result = null;
         timeout = (int) Math.ceil(shutterspeed * 3.5);
         Log.i(TAG, "setting timeout to takeSinglePhoto: " + timeout);
         try {
-            if(timeout > 10000) {
-                mRemoteApi.actTakePicture(timeout);
-            }else {
-                mRemoteApi.actTakePicture();
-            }
+            result = mRemoteApi.actTakePicture(timeout);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        for(ResultCallback callback : resultCallbacks) {
+            callback.resultCallback(result);
         }
     }
 
