@@ -3,6 +3,7 @@
 ext{
 	version = "2.30"
     androidCompileVersion = 27
+    androidMinVersion = 23
 }
 
 buildscript {

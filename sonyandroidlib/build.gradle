@@ -4,8 +4,8 @@ android {
     compileSdkVersion rootProject.ext.androidCompileVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.androidCompileVersion
-        targetSdkVersion rootProject.ext.androidCompileVersion
+        minSdkVersion rootProject.ext.androidMinVersion
+        targetSdkVersion rootProject.ext.androidMinVersion
         versionCode 1
         versionName "1.0"
 

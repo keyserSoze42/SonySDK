@@ -45,8 +45,14 @@ public class SonyCameraControllerUtil {
         String stringResult = null;
         try {
             stringResult = resultObject.getString("result");
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException resultNotFound) {
+            Log.w(TAG, "Result not found, fetching error");
+            try {
+                stringResult = resultObject.getString("error");
+            }catch (JSONException errorNotFound){
+                Log.e(TAG, "Error not found: " + errorNotFound);
+            }
+
         }
         return stringResult;
     }
