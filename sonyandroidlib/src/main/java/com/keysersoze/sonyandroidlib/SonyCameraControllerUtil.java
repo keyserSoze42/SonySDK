@@ -34,7 +34,6 @@ public class SonyCameraControllerUtil {
         {
             try {
                 cameraStatus = arr.getJSONObject(i).getString("cameraStatus");
-                Log.i(TAG, "camereaStatus Found: " + cameraStatus);
                 break;
             } catch (JSONException e) {
                 Log.i(TAG, "camereaStatus Not found Checking next array entry " + Integer.toString(i));

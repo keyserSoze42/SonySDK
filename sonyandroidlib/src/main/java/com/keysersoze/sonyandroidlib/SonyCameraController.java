@@ -566,7 +566,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         try {
             result = mRemoteApi.actTakePicture(timeout);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw e;
         }
         for(ResultCallback callback : resultCallbacks) {
             callback.resultCallback(result);
