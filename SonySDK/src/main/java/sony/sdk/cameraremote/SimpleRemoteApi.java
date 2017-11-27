@@ -15,6 +15,8 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 
 /**
@@ -663,6 +665,8 @@ public class SimpleRemoteApi {
             return new JSONObject(responseJson);
         } catch (JSONException e) {
             throw new IOException(e);
+        } catch (IOException ioException) {
+            throw new IOException(ioException);
         }
     }
 

@@ -19,7 +19,12 @@ public class SonyCameraControllerUtil {
 
         JSONArray arr = null;
         try {
-            arr = eventObject.getJSONArray("result");
+            if(eventObject != null) {
+                arr = eventObject.getJSONArray("result");
+            }else {
+                return cameraStatus;
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

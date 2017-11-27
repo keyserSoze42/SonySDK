@@ -2,6 +2,9 @@ package keysersoze.com;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.SocketException;
+
 /**
  * Created by aaron on 5/28/17.
  */
@@ -68,7 +71,7 @@ public interface BracketCameraControllerAPI {
     public void getFstop();
 
     public int getCameraState();
-    public void updateCameraState();
+    public void updateCameraState() throws IOException;
 
     public void registerResultCallback(ResultCallback resultCallback);
     public void registerStateChangeCallback(CameraStateChangeCallback stateChangeCallback);
@@ -76,13 +79,13 @@ public interface BracketCameraControllerAPI {
     /**
      * Take a single photo with the default timeout for the http client
      */
-    public void takeSinglePhoto();
+    public void takeSinglePhoto() throws IOException;
 
     /**
      * Take a single photo but pass the shutter speed to use to calculate a time out.
      * @param shutterspeed
      */
-    public void takeSinglePhoto(int shutterspeed);
+    public void takeSinglePhoto(int shutterspeed) throws IOException ;
 
     public interface CameraConnectionHandler {
         void onCameraConnected();

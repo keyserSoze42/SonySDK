@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import netscape.javascript.JSException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -269,7 +271,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
-    public void updateCameraState() {
+    public void updateCameraState() throws IOException{
         JSONArray supportedVersions;
         String latestVersion = "1.0";
 
@@ -280,9 +282,9 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             latestVersion = (String) eventJsonArray.get(eventJsonArray.length()-1);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw e;
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
 
         JSONObject eventObject = null;
@@ -556,7 +558,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
-    public void takeSinglePhoto(int shutterspeed) {
+    public void takeSinglePhoto(int shutterspeed) throws IOException {
         int timeout = shutterspeed;
         JSONObject result = null;
         timeout = (int) Math.ceil(shutterspeed * 3.5);
