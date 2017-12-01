@@ -55,7 +55,7 @@ public interface BracketCameraControllerAPI {
     /**
      * Stop the live view
      * @return
-     */
+     */ 
     public void stopLiveview();
 
     /**

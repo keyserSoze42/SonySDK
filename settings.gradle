@@ -1,2 +1,3 @@
-include ':SonySDK', ':sonydesignlib', ':bracketcameraAPI'
+include ':SonySDK', ':bracketcameraAPI'
+//':sonydesignlib',
 include ':sonyandroidlib'

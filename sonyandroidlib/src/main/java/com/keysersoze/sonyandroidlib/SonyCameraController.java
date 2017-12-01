@@ -26,7 +26,6 @@ import sony.sdk.cameraremote.ServerDevice;
 import sony.sdk.cameraremote.SimpleCameraEventObserver;
 import sony.sdk.cameraremote.SimpleRemoteApi;
 import sony.sdk.cameraremote.SimpleSsdpClient;
-import sony.sdk.cameraremote.utils.thread.ThreadPoolHelper;
 
 import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 
@@ -49,7 +48,6 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     private String cameraMode;
     private String liveViewUrl = null;
     private static CameraConnectionHandler connectionHandler;
-    private static ThreadPoolHelper threadPoolHelper;
     private Context context;
     private SimpleSsdpClient ssdpClient;
     private List<ResultCallback> resultCallbacks;
@@ -59,7 +57,6 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     public SonyCameraController(Context context, CameraConnectionHandler connectionHandler) {
         this.context = context;
         this.connectionHandler = connectionHandler;
-        threadPoolHelper = ThreadPoolHelper.getInstance();
         resultCallbacks = new ArrayList<>();
         stateChangeCallbacks = new ArrayList<>();
     }
@@ -527,12 +524,9 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         Log.d(TAG, "closeConnection(): EventObserver.release()");
         mEventObserver.release();
 
-        Log.d(TAG, "closeConnection(): Shutdown the executor");
-        threadPoolHelper.shutdownNow();
-        threadPoolHelper = null;
-
         Log.d(TAG, "closeConnection(): completed.");
     }
+
 
     @Override
     public void registerResultCallback(ResultCallback resultCallback){
