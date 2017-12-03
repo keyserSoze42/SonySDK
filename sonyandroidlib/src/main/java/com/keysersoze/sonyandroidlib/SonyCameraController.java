@@ -51,6 +51,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     private List<ResultCallback> resultCallbacks;
     private List<CameraStateChangeCallback> stateChangeCallbacks;
     private int currentCamerastate = BracketCameraControllerAPI.NOT_READY;
+    private int previousCamerastate = BracketCameraControllerAPI.NOT_READY;
 
     public SonyCameraController(Context context, CameraConnectionHandler connectionHandler) {
         this.context = context;
@@ -83,6 +84,10 @@ public class SonyCameraController implements BracketCameraControllerAPI {
                 for(CameraStateChangeCallback callback : stateChangeCallbacks) {
                     callback.onCameraStateChange(currentCamerastate);
                 }
+                if(previousCamerastate == BracketCameraControllerAPI.NOT_READY && currentCamerastate != BracketCameraControllerAPI.NOT_READY){
+                    connectionHandler.onCameraReady();
+                }
+                previousCamerastate = currentCamerastate;
             }
 
             @Override
@@ -189,7 +194,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        sendResult(result);
+        sendResult(result, SET_ISO_RESULT);
     }
 
     @Override
@@ -201,7 +206,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             e.printStackTrace();
         }
 
-        sendResult(result);
+        sendResult(result, SET_SHUTTER_SPEED_RESULT);
     }
 
     @Override
@@ -212,28 +217,28 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        sendResult(result);
+        sendResult(result, SET_FSTOP_RESULT);
     }
 
     @Override
     public void getIso() throws IOException{
         JSONObject isoResult = null;
         isoResult = mRemoteApi.getIsoSpeedRate();
-        sendResult(isoResult);
+        sendResult(isoResult, BracketCameraControllerAPI.ISO_RESULT);
     }
 
     @Override
     public void getSupportedIso() throws IOException{
         JSONObject supportedIsoResult = null;
         supportedIsoResult = mRemoteApi.getSupportedIsoSpeedRate();
-        sendResult(supportedIsoResult);
+        sendResult(supportedIsoResult, BracketCameraControllerAPI.SUPPORTED_ISO_RESULT);
     }
 
     @Override
     public void getShutterSpeed() throws IOException{
         JSONObject shutterSpeedResult = null;
         shutterSpeedResult = mRemoteApi.getShutterSpeed();
-        sendResult(shutterSpeedResult);
+        sendResult(shutterSpeedResult, BracketCameraControllerAPI.SHUTTER_SPEED_RESULT);
     }
 
     @Override
@@ -241,7 +246,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         JSONObject supportedShutterSpeedResult = null;
         String supportedShutterSpeedResultString = null;
         supportedShutterSpeedResult = mRemoteApi.getSupportedShutterSpeed();
-        sendResult(supportedShutterSpeedResult);
+        sendResult(supportedShutterSpeedResult, BracketCameraControllerAPI.SUPPORTED_SHUTTER_SPEED_RESULT);
 
 
     }
@@ -251,24 +256,34 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     public void getFstop() throws IOException{
         JSONObject fstopResult = null;
         fstopResult = mRemoteApi.getFNumber();
-        sendResult(fstopResult);
+        sendResult(fstopResult, BracketCameraControllerAPI.FSTOP_RESULT);
     }
 
     @Override
     public void getSupportedFstop() throws IOException{
         JSONObject supportedFStopResult = null;
         supportedFStopResult = mRemoteApi.getSupportedFNumber();
-        sendResult(supportedFStopResult);
+        sendResult(supportedFStopResult, BracketCameraControllerAPI.SUPPORTED_FSTOP_RESULT);
     }
 
-    private void sendResult(JSONObject result){
+    private void sendResult(JSONObject result, String prefix){
         String resultString = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(prefix);
+        stringBuilder.append(",");
         if(result != null){
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
             if(resultString != null && resultString.contains("postview")){
                 resultString = "PHOTO_COMPLETE";
             }
+            stringBuilder.append(resultString);
         }
+
+        resultString = stringBuilder.toString();
+        resultString = resultString.replace("[", "");
+        resultString = resultString.replace("]", "");
+        resultString = resultString.replace("\"", "");
+
         for (ResultCallback callback : resultCallbacks) {
             callback.resultCallback(resultString);
         }
@@ -565,7 +580,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        sendResult(result);
+        sendResult(result, BracketCameraControllerAPI.SINGLE_PHOTO);
     }
 
     @Override
@@ -579,7 +594,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             throw e;
         }
-        sendResult(result);
+        sendResult(result, BracketCameraControllerAPI.SINGLE_PHOTO);
     }
 
     private int convertCameraState(String cameraSate) {

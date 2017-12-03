@@ -35,6 +35,17 @@ public interface BracketCameraControllerAPI {
     public static final int STREAMING                         =  21;   //Streaming the movie
     public static final int DELETING                          =  22;   //Deleting the content
 
+    public static final String SUPPORTED_ISO_RESULT = "SUPPORTED_ISO";
+    public static final String SUPPORTED_FSTOP_RESULT = "SUPPORTED_FSTOP";
+    public static final String SUPPORTED_SHUTTER_SPEED_RESULT = "SUPPORTED_SHUTTER_SPEED";
+    public static final String ISO_RESULT = "ISO";
+    public static final String FSTOP_RESULT = "FSTOP";
+    public static final String SHUTTER_SPEED_RESULT = "SHUTTER_SPEED";
+    public static final String SET_ISO_RESULT = "SET_ISO";
+    public static final String SET_FSTOP_RESULT = "SET_FSTOP";
+    public static final String SET_SHUTTER_SPEED_RESULT = "SET_SHUTTER_SPEED";
+    public static final String SINGLE_PHOTO = "SINGLE_PHOTO";
+
     /**
      * Opens a connection to the camera
      */
