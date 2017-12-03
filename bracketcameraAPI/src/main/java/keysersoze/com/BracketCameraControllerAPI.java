@@ -3,7 +3,6 @@ package keysersoze.com;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.SocketException;
 
 /**
  * Created by aaron on 5/28/17.
@@ -66,9 +65,13 @@ public interface BracketCameraControllerAPI {
     public void setShutterSpeed(String shutterSpeed);
     public void setFstop(String fstop);
 
-    public void getIso();
-    public void getShutterSpeed();
-    public void getFstop();
+    public void getIso() throws IOException;
+    public void getShutterSpeed() throws IOException;
+    public void getFstop() throws IOException;
+
+    public void getSupportedIso() throws IOException;
+    public void getSupportedShutterSpeed() throws IOException;
+    public void getSupportedFstop() throws IOException;
 
     public int getCameraState();
     public void updateCameraState() throws IOException;
@@ -94,7 +97,7 @@ public interface BracketCameraControllerAPI {
     }
 
     public interface ResultCallback {
-         void resultCallback(JSONObject resultJson);
+         void resultCallback(String resultString);
     }
 
     public interface CameraStateChangeCallback {

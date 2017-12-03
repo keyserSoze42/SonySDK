@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import netscape.javascript.JSException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -191,9 +189,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(result);
-        }
+        sendResult(result);
     }
 
     @Override
@@ -205,9 +201,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             e.printStackTrace();
         }
 
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(result);
-        }
+        sendResult(result);
     }
 
     @Override
@@ -218,47 +212,65 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(result);
-        }
+        sendResult(result);
     }
 
     @Override
-    public void getIso() {
+    public void getIso() throws IOException{
         JSONObject isoResult = null;
-        try {
-            isoResult = mRemoteApi.getIsoSpeedRate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(isoResult);
-        }
+        isoResult = mRemoteApi.getIsoSpeedRate();
+        sendResult(isoResult);
     }
 
     @Override
-    public void getShutterSpeed() {
+    public void getSupportedIso() throws IOException{
+        JSONObject supportedIsoResult = null;
+        supportedIsoResult = mRemoteApi.getSupportedIsoSpeedRate();
+        sendResult(supportedIsoResult);
+    }
+
+    @Override
+    public void getShutterSpeed() throws IOException{
         JSONObject shutterSpeedResult = null;
-        try {
-            shutterSpeedResult = mRemoteApi.getShutterSpeed();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(shutterSpeedResult);
-        }
+        shutterSpeedResult = mRemoteApi.getShutterSpeed();
+        sendResult(shutterSpeedResult);
     }
 
     @Override
-    public void getFstop() {
+    public void getSupportedShutterSpeed() throws IOException{
+        JSONObject supportedShutterSpeedResult = null;
+        String supportedShutterSpeedResultString = null;
+        supportedShutterSpeedResult = mRemoteApi.getSupportedShutterSpeed();
+        sendResult(supportedShutterSpeedResult);
+
+
+    }
+
+
+        @Override
+    public void getFstop() throws IOException{
         JSONObject fstopResult = null;
-        try {
-            fstopResult = mRemoteApi.getFNumber();
-        } catch (IOException e) {
-            e.printStackTrace();
+        fstopResult = mRemoteApi.getFNumber();
+        sendResult(fstopResult);
+    }
+
+    @Override
+    public void getSupportedFstop() throws IOException{
+        JSONObject supportedFStopResult = null;
+        supportedFStopResult = mRemoteApi.getSupportedFNumber();
+        sendResult(supportedFStopResult);
+    }
+
+    private void sendResult(JSONObject result){
+        String resultString = null;
+        if(result != null){
+            resultString = SonyCameraControllerUtil.parseSingleResult(result);
+            if(resultString != null && resultString.contains("postview")){
+                resultString = "PHOTO_COMPLETE";
+            }
         }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(fstopResult);
+        for (ResultCallback callback : resultCallbacks) {
+            callback.resultCallback(resultString);
         }
     }
 
@@ -388,7 +400,13 @@ public class SonyCameraController implements BracketCameraControllerAPI {
 
     /**
      * Open connection to the camera device to start monitoring Camera events
-     * and showing liveview.
+     * and s        if(supportedShutterSpeedResult != null){
+            supportedShutterSpeedResultString = SonyCameraControllerUtil.parseSingleResult(supportedShutterSpeedResult);
+            Log.i(TAG, "Result Received String: " + restultString);
+        }
+        for (ResultCallback callback : resultCallbacks) {
+            callback.resultCallback(supportedShutterSpeedResultString);
+        }howing liveview.
      */
 
     @Override
@@ -543,12 +561,11 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         JSONObject result = null;
         try {
             result = mRemoteApi.actTakePicture();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(result);
-        }
+        sendResult(result);
     }
 
     @Override
@@ -562,9 +579,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         } catch (IOException e) {
             throw e;
         }
-        for(ResultCallback callback : resultCallbacks) {
-            callback.resultCallback(result);
-        }
+        sendResult(result);
     }
 
     private int convertCameraState(String cameraSate) {
