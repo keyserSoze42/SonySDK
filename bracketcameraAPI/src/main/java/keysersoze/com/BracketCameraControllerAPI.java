@@ -80,9 +80,9 @@ public interface BracketCameraControllerAPI {
     public void getShutterSpeed() throws IOException;
     public void getFstop() throws IOException;
 
-    public void getSupportedIso() throws IOException;
-    public void getSupportedShutterSpeed() throws IOException;
-    public void getSupportedFstop() throws IOException;
+    public void getAvailableIso() throws IOException;
+    public void getAvailableShutterSpeed() throws IOException;
+    public void getAvailableFstop() throws IOException;
 
     public int getCameraState();
     public void updateCameraState() throws IOException;

@@ -53,6 +53,13 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     private int currentCamerastate = BracketCameraControllerAPI.NOT_READY;
     private int previousCamerastate = BracketCameraControllerAPI.NOT_READY;
 
+    private final String GET_FSTOP_API = "getAvailableFNumber";
+    private final String GET_SHUTTER_SPEED_API = "getAvailableShutterSpeed";
+    private final String GET_ISO_API = "getAvailableIsoSpeedRate";
+    private final String GET_TAKE_PHOTO_API = "actTakePicture";
+
+    private boolean apisReady = false;
+
     public SonyCameraController(Context context, CameraConnectionHandler connectionHandler) {
         this.context = context;
         this.connectionHandler = connectionHandler;
@@ -79,13 +86,10 @@ public class SonyCameraController implements BracketCameraControllerAPI {
 
             @Override
             public void onCameraStatusChanged(String status) {
-                Log.d(TAG, "onCameraStatusChanged() called: " + status);
+                Log.d(TAG, "onCameraStatusChanged()");
                 currentCamerastate = convertCameraState(status);
                 for(CameraStateChangeCallback callback : stateChangeCallbacks) {
                     callback.onCameraStateChange(currentCamerastate);
-                }
-                if(previousCamerastate == BracketCameraControllerAPI.NOT_READY && currentCamerastate != BracketCameraControllerAPI.NOT_READY){
-                    connectionHandler.onCameraReady();
                 }
                 previousCamerastate = currentCamerastate;
             }
@@ -94,6 +98,13 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             public void onApiListModified(List<String> apis) {
                 Log.d(TAG, "onApiListModified() called");
 
+                if(apis.contains(GET_FSTOP_API)
+                        && apis.contains(GET_ISO_API)
+                        &&apis.contains(GET_SHUTTER_SPEED_API)
+                        &&apis.contains(GET_TAKE_PHOTO_API) && !apisReady){
+                    connectionHandler.onCameraReady();
+                    apisReady = true;
+                }
             }
 
             @Override
@@ -228,9 +239,9 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
-    public void getSupportedIso() throws IOException{
+    public void getAvailableIso() throws IOException{
         JSONObject supportedIsoResult = null;
-        supportedIsoResult = mRemoteApi.getSupportedIsoSpeedRate();
+        supportedIsoResult = mRemoteApi.getAvailableIsoSpeedRate();
         sendResult(supportedIsoResult, BracketCameraControllerAPI.SUPPORTED_ISO_RESULT);
     }
 
@@ -242,17 +253,15 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
-    public void getSupportedShutterSpeed() throws IOException{
+    public void getAvailableShutterSpeed() throws IOException{
         JSONObject supportedShutterSpeedResult = null;
         String supportedShutterSpeedResultString = null;
-        supportedShutterSpeedResult = mRemoteApi.getSupportedShutterSpeed();
+        supportedShutterSpeedResult = mRemoteApi.getAvailableShutterSpeed();
         sendResult(supportedShutterSpeedResult, BracketCameraControllerAPI.SUPPORTED_SHUTTER_SPEED_RESULT);
-
-
     }
 
 
-        @Override
+    @Override
     public void getFstop() throws IOException{
         JSONObject fstopResult = null;
         fstopResult = mRemoteApi.getFNumber();
@@ -260,9 +269,9 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     }
 
     @Override
-    public void getSupportedFstop() throws IOException{
+    public void getAvailableFstop() throws IOException{
         JSONObject supportedFStopResult = null;
-        supportedFStopResult = mRemoteApi.getSupportedFNumber();
+        supportedFStopResult = mRemoteApi.getAvailableFNumber();
         sendResult(supportedFStopResult, BracketCameraControllerAPI.SUPPORTED_FSTOP_RESULT);
     }
 
@@ -336,7 +345,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         }
 
         String stringCameraStatus = SonyCameraControllerUtil.parseCameraStatus(eventObject);
-        int cameraStatus = convertCameraState(stringCameraStatus);
+        currentCamerastate = convertCameraState(stringCameraStatus);
 
         for(CameraStateChangeCallback callback : stateChangeCallbacks) {
             callback.onCameraStateChange(currentCamerastate);
@@ -558,6 +567,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         mEventObserver.release();
 
         Log.d(TAG, "closeConnection(): completed.");
+        apisReady = false;
     }
 
 
