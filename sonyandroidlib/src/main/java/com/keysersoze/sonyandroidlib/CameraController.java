@@ -30,12 +30,12 @@ import static com.keysersoze.sonyandroidlib.IsSupportedUtil.isShootingStatus;
 /**
  * Created by aaron on 5/29/15.
  */
-public class SonyCameraController implements BracketCameraControllerAPI {
+public class CameraController implements BracketCameraControllerAPI {
 
     private boolean connectionStatus = false;
     private String cameraAddress;
 
-    private static final String TAG = "SonyCameraController";
+    private static final String TAG = "CameraController";
 
     private ServerDevice serverDevice;
     private static SimpleCameraEventObserver.ChangeListener mEventListener;
@@ -58,9 +58,12 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     private final String GET_ISO_API = "getAvailableIsoSpeedRate";
     private final String GET_TAKE_PHOTO_API = "actTakePicture";
 
+    private String shutterSpeed;
+    private int timeout;
+
     private boolean apisReady = false;
 
-    public SonyCameraController(Context context, CameraConnectionHandler connectionHandler) {
+    public CameraController(Context context, CameraConnectionHandler connectionHandler) {
         this.context = context;
         this.connectionHandler = connectionHandler;
         resultCallbacks = new ArrayList<>();
@@ -86,7 +89,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
 
             @Override
             public void onCameraStatusChanged(String status) {
-                Log.d(TAG, "onCameraStatusChanged()");
+                Log.d(TAG, "onCameraStatusChanged()" + status);
                 currentCamerastate = convertCameraState(status);
                 for(CameraStateChangeCallback callback : stateChangeCallbacks) {
                     callback.onCameraStateChange(currentCamerastate);
@@ -211,6 +214,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
     @Override
     public void setShutterSpeed(String shutterSpeed) {
         JSONObject result = null;
+        this.shutterSpeed = shutterSpeed;
         try {
             result = mRemoteApi.setShutterSpeed(shutterSpeed);
         } catch (IOException e) {
@@ -275,7 +279,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         sendResult(supportedFStopResult, BracketCameraControllerAPI.SUPPORTED_FSTOP_RESULT);
     }
 
-    private void sendResult(JSONObject result, String prefix){
+    private void sendResult(JSONObject result, String prefix) {
         String resultString = null;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(prefix);
@@ -284,7 +288,13 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
             if(resultString != null && resultString.contains("postview")){
                 resultString = "PHOTO_COMPLETE";
-            }else {
+            }else if(resultString.contains("40403")){
+                try {
+                    mRemoteApi.awaitTakePicture(timeout);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
                 Log.i(TAG, resultString);
                 if((prefix.equals(BracketCameraControllerAPI.SUPPORTED_ISO_RESULT)
                         || prefix.equals(BracketCameraControllerAPI.SUPPORTED_SHUTTER_SPEED_RESULT)
@@ -608,9 +618,15 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         int timeout = shutterspeed;
         JSONObject result = null;
         timeout = (int) Math.ceil(shutterspeed * 3.5);
+        this.timeout = timeout;
         Log.i(TAG, "setting timeout to takeSinglePhoto: " + timeout);
         try {
-            result = mRemoteApi.actTakePicture(timeout);
+            if(shutterspeed >= 8000){
+                result = mRemoteApi.awaitTakePicture(timeout);
+            }else {
+                result = mRemoteApi.actTakePicture(timeout);
+            }
+
         } catch (IOException e) {
             throw e;
         }

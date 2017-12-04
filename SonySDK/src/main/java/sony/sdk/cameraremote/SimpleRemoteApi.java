@@ -670,6 +670,25 @@ public class SimpleRemoteApi {
         }
     }
 
+    public JSONObject awaitTakePicture(int timeout) throws IOException {
+        String service = "camera";
+        try {
+            JSONObject requestJson =
+                    new JSONObject().put("method", "awaitTakePicture").put("params", new JSONArray()) //
+                            .put("id", id()).put("version", "1.0");
+            String url = findActionListUrl(service) + "/" + service;
+
+            log("Request:  " + requestJson.toString());
+            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString(), timeout);
+            log("Response: " + responseJson);
+            return new JSONObject(responseJson);
+        } catch (JSONException e) {
+            throw new IOException(e);
+        } catch (IOException ioException) {
+            throw new IOException(ioException);
+        }
+    }
+
 
 
     /**
