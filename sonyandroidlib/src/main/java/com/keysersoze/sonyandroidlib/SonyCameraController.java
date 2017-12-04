@@ -292,6 +292,7 @@ public class SonyCameraController implements BracketCameraControllerAPI {
         resultString = resultString.replace("[", "");
         resultString = resultString.replace("]", "");
         resultString = resultString.replace("\"", "");
+        resultString = resultString.replace("\\", "");
 
         for (ResultCallback callback : resultCallbacks) {
             callback.resultCallback(resultString);
