@@ -57,6 +57,7 @@ public class CameraController implements BracketCameraControllerAPI {
     private final String GET_SHUTTER_SPEED_API = "getAvailableShutterSpeed";
     private final String GET_ISO_API = "getAvailableIsoSpeedRate";
     private final String GET_TAKE_PHOTO_API = "actTakePicture";
+    private boolean photoCompleteFlag = false;
 
     private String shutterSpeed;
     private int timeout;
@@ -95,6 +96,16 @@ public class CameraController implements BracketCameraControllerAPI {
                     callback.onCameraStateChange(currentCamerastate);
                 }
                 previousCamerastate = currentCamerastate;
+
+                //We dont know if the state change or the photo complete will trigger first.
+                //Use a flag here and in the sendResult to check and reset the flag to false when finished.
+                if(photoCompleteFlag && currentCamerastate == BracketCameraControllerAPI.IDLE){
+                    for (ResultCallback callback : resultCallbacks) {
+                        callback.resultCallback(BracketCameraControllerAPI.PHOTO_COMPLETE);
+                    }
+                    photoCompleteFlag = false;
+                }
+
             }
 
             @Override
@@ -287,7 +298,13 @@ public class CameraController implements BracketCameraControllerAPI {
         if(result != null){
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
             if(resultString != null && resultString.contains("postview")){
-                resultString = "PHOTO_COMPLETE";
+                if(currentCamerastate == BracketCameraControllerAPI.IDLE){
+                    resultString = BracketCameraControllerAPI.PHOTO_COMPLETE;
+                    photoCompleteFlag = false;
+                }else {
+                    photoCompleteFlag = true;
+                }
+
             }else if(resultString.contains("40403")){
                 try {
                     mRemoteApi.awaitTakePicture(timeout);
