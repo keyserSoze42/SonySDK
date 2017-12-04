@@ -284,7 +284,16 @@ public class SonyCameraController implements BracketCameraControllerAPI {
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
             if(resultString != null && resultString.contains("postview")){
                 resultString = "PHOTO_COMPLETE";
+            }else {
+                Log.i(TAG, resultString);
+                if((prefix.equals(BracketCameraControllerAPI.SUPPORTED_ISO_RESULT)
+                        || prefix.equals(BracketCameraControllerAPI.SUPPORTED_SHUTTER_SPEED_RESULT)
+                        || prefix.equals(BracketCameraControllerAPI.SUPPORTED_FSTOP_RESULT))
+                        && !resultString.contains("--")){
+                    resultString = resultString.substring(resultString.indexOf(",") + 1);
+                }
             }
+
             stringBuilder.append(resultString);
         }
 
