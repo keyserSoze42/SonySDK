@@ -363,6 +363,7 @@ public class CameraController implements BracketCameraControllerAPI {
         resultString = resultString.replace("]", "");
         resultString = resultString.replace("\"", "");
         resultString = resultString.replace("\\", "");
+        resultString = resultString.replace("BULB", "");
 
         for (ResultCallback callback : resultCallbacks) {
             callback.resultCallback(resultString);
