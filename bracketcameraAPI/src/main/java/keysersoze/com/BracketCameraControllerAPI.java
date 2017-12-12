@@ -46,6 +46,7 @@ public interface BracketCameraControllerAPI {
     public static final String SET_SHUTTER_SPEED_RESULT = "SET_SHUTTER_SPEED";
     public static final String SINGLE_PHOTO = "SINGLE_PHOTO";
     public static final String PHOTO_COMPLETE = "PHOTO_COMPLETE";
+    public static final String AWAIT_TAKE_PICTURE = "AWAIT_TAKE_PICTURE";
 
     /**
      * Opens a connection to the camera

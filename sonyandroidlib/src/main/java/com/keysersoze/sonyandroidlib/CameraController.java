@@ -3,6 +3,10 @@ package com.keysersoze.sonyandroidlib;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.os.Bundle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,11 +56,15 @@ public class CameraController implements BracketCameraControllerAPI {
     private List<CameraStateChangeCallback> stateChangeCallbacks;
     private int currentCamerastate = BracketCameraControllerAPI.NOT_READY;
     private int previousCamerastate = BracketCameraControllerAPI.NOT_READY;
+    private long timeOfPictureTaken = 0;
+    private static Handler awaitHandler;
+    private HandlerThread awaitThread = null;
 
     private final String GET_FSTOP_API = "getAvailableFNumber";
     private final String GET_SHUTTER_SPEED_API = "getAvailableShutterSpeed";
     private final String GET_ISO_API = "getAvailableIsoSpeedRate";
     private final String GET_TAKE_PHOTO_API = "actTakePicture";
+    private final String AWAIT_TAKE_PICTURE_API = "awaitTakePicture";
     private boolean photoCompleteFlag = false;
 
     private String shutterSpeed;
@@ -69,6 +77,23 @@ public class CameraController implements BracketCameraControllerAPI {
         this.connectionHandler = connectionHandler;
         resultCallbacks = new ArrayList<>();
         stateChangeCallbacks = new ArrayList<>();
+        awaitThread = new HandlerThread("PHOTO_THREAD");
+        awaitThread.start();
+        awaitHandler = new Handler(awaitThread.getLooper()) {
+            @Override
+            public void handleMessage(Message awaitMessage) {
+                try {
+                    Bundle dataBundle = awaitMessage.getData();
+                    int timeout = dataBundle.getInt(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE);
+
+                    JSONObject result = mRemoteApi.awaitTakePicture(timeout);
+                    sendResult(result, BracketCameraControllerAPI.AWAIT_TAKE_PICTURE);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 
     /*
@@ -110,7 +135,7 @@ public class CameraController implements BracketCameraControllerAPI {
 
             @Override
             public void onApiListModified(List<String> apis) {
-                Log.d(TAG, "onApiListModified() called");
+                Log.d(TAG, "onApiListModified() called" + apis);
 
                 if(apis.contains(GET_FSTOP_API)
                         && apis.contains(GET_ISO_API)
@@ -293,11 +318,20 @@ public class CameraController implements BracketCameraControllerAPI {
     private void sendResult(JSONObject result, String prefix) {
         String resultString = null;
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(prefix);
-        stringBuilder.append(",");
         if(result != null){
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
+            Log.i(TAG, resultString);
             if(resultString != null && resultString.contains("postview")){
+
+                if(prefix.equals(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE)){
+                    photoCompleteFlag = true;
+                    try {
+                        updateCameraState();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 if(currentCamerastate == BracketCameraControllerAPI.IDLE){
                     resultString = BracketCameraControllerAPI.PHOTO_COMPLETE;
                     photoCompleteFlag = false;
@@ -307,12 +341,11 @@ public class CameraController implements BracketCameraControllerAPI {
 
             }else if(resultString.contains("40403")){
                 try {
-                    mRemoteApi.awaitTakePicture(timeout);
+                    awaitTakePicture(timeout);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                Log.i(TAG, resultString);
                 if((prefix.equals(BracketCameraControllerAPI.SUPPORTED_ISO_RESULT)
                         || prefix.equals(BracketCameraControllerAPI.SUPPORTED_SHUTTER_SPEED_RESULT)
                         || prefix.equals(BracketCameraControllerAPI.SUPPORTED_FSTOP_RESULT))
@@ -320,7 +353,8 @@ public class CameraController implements BracketCameraControllerAPI {
                     resultString = resultString.substring(resultString.indexOf(",") + 1);
                 }
             }
-
+            stringBuilder.append(prefix);
+            stringBuilder.append(",");
             stringBuilder.append(resultString);
         }
 
@@ -621,6 +655,7 @@ public class CameraController implements BracketCameraControllerAPI {
     @Override
     public void takeSinglePhoto() {
         JSONObject result = null;
+        timeOfPictureTaken = System.currentTimeMillis();
         try {
             result = mRemoteApi.actTakePicture();
 
@@ -633,21 +668,26 @@ public class CameraController implements BracketCameraControllerAPI {
     @Override
     public void takeSinglePhoto(int shutterspeed) throws IOException {
         int timeout = shutterspeed;
+        timeOfPictureTaken = System.currentTimeMillis();
         JSONObject result = null;
         timeout = (int) Math.ceil(shutterspeed * 3.5);
         this.timeout = timeout;
         Log.i(TAG, "setting timeout to takeSinglePhoto: " + timeout);
-        try {
-            if(shutterspeed >= 8000){
-                result = mRemoteApi.awaitTakePicture(timeout);
-            }else {
-                result = mRemoteApi.actTakePicture(timeout);
-            }
-
-        } catch (IOException e) {
-            throw e;
-        }
+        result = mRemoteApi.actTakePicture(timeout);
         sendResult(result, BracketCameraControllerAPI.SINGLE_PHOTO);
+    }
+
+    public void awaitTakePicture(int timeout)throws IOException{
+        long timePassed = System.currentTimeMillis() - timeOfPictureTaken;
+        long threadSleep = (Integer.parseInt(shutterSpeed) * 2) - timePassed;
+        if(threadSleep <= 0){
+            threadSleep = 0;
+        }
+        Bundle timeoutBundle = new Bundle();
+        timeoutBundle.putInt(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE, timeout);
+        Message message = awaitHandler.obtainMessage(200);
+        message.setData(timeoutBundle);
+        awaitHandler.sendMessageDelayed(message, threadSleep);
     }
 
     private int convertCameraState(String cameraSate) {

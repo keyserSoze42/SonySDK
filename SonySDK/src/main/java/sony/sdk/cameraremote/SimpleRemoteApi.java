@@ -87,9 +87,9 @@ public class SimpleRemoteApi {
 
     // Output a log line.
     private void log(String msg) {
-/*        if (FULL_LOG) {
+        if (FULL_LOG) {
             Log.d(TAG, msg);
-        }*/
+        }
     }
 
     // Camera Service APIs
