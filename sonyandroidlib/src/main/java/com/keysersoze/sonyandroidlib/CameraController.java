@@ -59,6 +59,8 @@ public class CameraController implements BracketCameraControllerAPI {
     private long timeOfPictureTaken = 0;
     private static Handler awaitHandler;
     private HandlerThread awaitThread = null;
+    private static Handler bulbHandler;
+    private HandlerThread bulbThread = null;
 
     private final String GET_FSTOP_API = "getAvailableFNumber";
     private final String GET_SHUTTER_SPEED_API = "getAvailableShutterSpeed";
@@ -79,6 +81,10 @@ public class CameraController implements BracketCameraControllerAPI {
         stateChangeCallbacks = new ArrayList<>();
         awaitThread = new HandlerThread("PHOTO_THREAD");
         awaitThread.start();
+
+        bulbThread = new HandlerThread("PHOTO_THREAD");
+        bulbThread.start();
+
         awaitHandler = new Handler(awaitThread.getLooper()) {
             @Override
             public void handleMessage(Message awaitMessage) {
@@ -87,6 +93,22 @@ public class CameraController implements BracketCameraControllerAPI {
                     int timeout = dataBundle.getInt(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE);
 
                     JSONObject result = mRemoteApi.awaitTakePicture(timeout);
+                    sendResult(result, BracketCameraControllerAPI.AWAIT_TAKE_PICTURE);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        bulbHandler = new Handler(bulbThread.getLooper()) {
+            @Override
+            public void handleMessage(Message bulbMessage) {
+                try {
+                    Bundle dataBundle = bulbMessage.getData();
+                    int timeout = dataBundle.getInt(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE);
+
+                    JSONObject result = mRemoteApi.stopBulbShooting(timeout);
                     sendResult(result, BracketCameraControllerAPI.AWAIT_TAKE_PICTURE);
 
                 } catch (IOException e) {
@@ -689,6 +711,20 @@ public class CameraController implements BracketCameraControllerAPI {
         Message message = awaitHandler.obtainMessage(200);
         message.setData(timeoutBundle);
         awaitHandler.sendMessageDelayed(message, threadSleep);
+    }
+
+    private void takeBulbPhoto(int timeout, int shutterspeed) throws IOException {
+        JSONObject result = null;
+        mRemoteApi.startBulbShooting(timeout);
+        result = mRemoteApi.actTakePicture(timeout);
+        sendResult(result, BracketCameraControllerAPI.SINGLE_PHOTO);
+
+        Bundle timeoutBundle = new Bundle();
+        timeoutBundle.putInt(BracketCameraControllerAPI.TIMEOUT, timeout);
+        Message message = bulbHandler.obtainMessage(200);
+        message.setData(timeoutBundle);
+        bulbHandler.sendMessageDelayed(message, shutterspeed);
+
     }
 
     private int convertCameraState(String cameraSate) {

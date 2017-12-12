@@ -396,7 +396,7 @@ public class SimpleRemoteApi {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public JSONObject startBulbShooting() throws IOException {
+    public JSONObject startBulbShooting(int timeout) throws IOException {
         String service = "camera";
         try {
             JSONObject requestJson =
@@ -406,7 +406,7 @@ public class SimpleRemoteApi {
             String url = findActionListUrl(service) + "/" + service;
 
             log("Request:  " + requestJson.toString());
-            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString());
+            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString(), timeout);
             log("Response: " + responseJson);
             return new JSONObject(responseJson);
         } catch (JSONException e) {
@@ -431,7 +431,7 @@ public class SimpleRemoteApi {
      * @throws IOException all errors and exception are wrapped by this
      *                     Exception.
      */
-    public JSONObject stopBulbShooting() throws IOException {
+    public JSONObject stopBulbShooting(int timeout) throws IOException {
         String service = "camera";
         try {
             JSONObject requestJson =
@@ -441,7 +441,7 @@ public class SimpleRemoteApi {
             String url = findActionListUrl(service) + "/" + service;
 
             log("Request:  " + requestJson.toString());
-            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString());
+            String responseJson = SimpleHttpClient.httpPost(url, requestJson.toString(), timeout);
             log("Response: " + responseJson);
             return new JSONObject(responseJson);
         } catch (JSONException e) {
@@ -688,8 +688,6 @@ public class SimpleRemoteApi {
             throw new IOException(ioException);
         }
     }
-
-
 
     /**
      * Calls startMovieRec API to the target server. Request JSON data is such
