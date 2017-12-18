@@ -389,7 +389,6 @@ public class CameraController implements BracketCameraControllerAPI {
         StringBuilder stringBuilder = new StringBuilder();
         if(result != null){
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
-            Log.i(TAG, resultString);
             if(resultString != null && resultString.contains("postview")){
 
                 if(prefix.equals(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE)){
@@ -446,7 +445,6 @@ public class CameraController implements BracketCameraControllerAPI {
         //We dont know if the state change or the photo complete will trigger first.
         //Use a flag here and in the sendwait(5000);Result to check and reset the flag to false when finished.
         if(photoCompleteFlag && currentCamerastate == BracketCameraControllerAPI.IDLE){
-            Log.i(TAG, "Photo Is complete");
             for (ResultCallback callback : resultCallbacks) {
                 callback.resultCallback(BracketCameraControllerAPI.PHOTO_COMPLETE);
             }
@@ -772,12 +770,9 @@ public class CameraController implements BracketCameraControllerAPI {
         if(timeout < 15000){
             timeout = 15000;
         }
-        Log.i(TAG, "take single photo:  " + timeout);
         if(shutterspeed/1000 > 30){
-            Log.i(TAG, "Taking bulb: " + shutterspeed);
             takeBulbPhoto(timeout, shutterspeed);
         }else{
-            Log.i(TAG, "Taking single photo: " + shutterspeed);
             result = mRemoteApi.actTakePicture(timeout);
             sendResult(result, BracketCameraControllerAPI.SINGLE_PHOTO);
         }
