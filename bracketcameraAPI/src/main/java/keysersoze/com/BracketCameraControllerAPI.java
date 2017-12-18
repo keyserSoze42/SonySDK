@@ -88,7 +88,7 @@ public interface BracketCameraControllerAPI {
     public void getAvailableFstop() throws IOException;
 
     public int getCameraState();
-    public void updateCameraState() throws IOException;
+    public int updateCameraState() throws IOException;
 
     public void registerResultCallback(ResultCallback resultCallback);
     public void registerStateChangeCallback(CameraStateChangeCallback stateChangeCallback);
