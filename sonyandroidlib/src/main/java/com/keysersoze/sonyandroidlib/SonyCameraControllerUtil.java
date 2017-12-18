@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import android.text.TextUtils;
 
 /**
  * Created by aaron on 5/29/17.
@@ -41,7 +42,7 @@ public class SonyCameraControllerUtil {
                 cameraStatus = arr.getJSONObject(i).getString("cameraStatus");
                 break;
             } catch (JSONException e) {
-                Log.i(TAG, "camereaStatus Not found Checking next array entry " + Integer.toString(i));
+                Log.i(TAG, "camereaStatus Not found Checking next array entry");
             }
 
             //resultJson.getJSONArray("result").getJSONObject(1).getString("cameraStatus")
@@ -64,6 +65,19 @@ public class SonyCameraControllerUtil {
 
         }
         return stringResult;
+    }
+
+    public static int getNormalizedTimeInSeconds(String shutterSpeed){
+        int shutterSpeedInt = 1;
+        if (!shutterSpeed.contains("/") && !shutterSpeed.contains(".")) {
+            if (shutterSpeed.contains("min")) {
+                shutterSpeed = TextUtils.split(shutterSpeed, "min")[0];
+                shutterSpeedInt = Integer.parseInt(shutterSpeed) * 60;
+            } else  {
+                shutterSpeedInt = Integer.parseInt(shutterSpeed);
+            }
+        }
+        return shutterSpeedInt;
     }
 
 }
