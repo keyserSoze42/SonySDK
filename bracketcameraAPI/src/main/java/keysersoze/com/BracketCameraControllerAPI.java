@@ -108,6 +108,8 @@ public interface BracketCameraControllerAPI {
         void onCameraConnected();
 
         void onCameraReady();
+
+        void onCameraConnectionError();
     }
 
     public interface ResultCallback {

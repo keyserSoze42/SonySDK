@@ -593,7 +593,7 @@ public class CameraController implements BracketCameraControllerAPI {
         if(ssdpClient == null){
             ssdpClient = new SimpleSsdpClient();
         }
-        SimpleSsdpClient.SearchResultHandler searchResultHandler = new SimpleSsdpClient.SearchResultHandler() {
+        SimpleSsdpClient.SearchResultHandler searchResultHandler = new SimpleSsdpClient.SearchResultHandler()  {
             @Override
             public void onDeviceFound(ServerDevice serverDevice) {
                 mRemoteApi = SimpleRemoteApi.getInstance();
@@ -650,12 +650,13 @@ public class CameraController implements BracketCameraControllerAPI {
 
                 } catch (IOException e) {
                     Log.w(TAG, "openConnection : IOException: " + e.getMessage());
+                    connectionHandler.onCameraConnectionError();
                 }
             }
 
             @Override
             public void onErrorFinished() {
-                Log.w(TAG, "openConnection : Error Finished");
+                connectionHandler.onCameraConnectionError();
 
             }
         };
