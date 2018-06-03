@@ -39,6 +39,7 @@ public class SonyCameraControllerUtil {
         for (int i = 0; i < arr.length(); i++)
         {
             try {
+                Log.i(TAG,  arr.getJSONObject(i).toString());
                 cameraStatus = arr.getJSONObject(i).getString("cameraStatus");
                 break;
             } catch (JSONException e) {
@@ -78,6 +79,17 @@ public class SonyCameraControllerUtil {
             }
         }
         return shutterSpeedInt;
+    }
+
+    public static String formatStringShutterSpeed(String shutterSpeed){
+        StringBuilder formatedShutterSpeedBuilder = new StringBuilder(shutterSpeed);
+        if (!shutterSpeed.contains("/") && !shutterSpeed.equals("BULB")) {
+            if(formatedShutterSpeedBuilder.toString().startsWith(".")){
+                formatedShutterSpeedBuilder.insert(0, "0");
+            }
+            formatedShutterSpeedBuilder.append("\"");
+        }
+        return formatedShutterSpeedBuilder.toString();
     }
 
 }

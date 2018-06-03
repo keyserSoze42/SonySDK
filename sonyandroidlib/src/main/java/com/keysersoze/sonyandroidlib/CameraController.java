@@ -155,6 +155,7 @@ public class CameraController implements BracketCameraControllerAPI {
 
                         try {
                             Thread.sleep(500);
+                            Log.i(TAG, "waiting for idle camera state");
                             updateCameraState();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -321,7 +322,12 @@ public class CameraController implements BracketCameraControllerAPI {
             if(shutterSpeedInt > 30){
                 setShutterSpeed = "BULB";
             }
-            result = mRemoteApi.setShutterSpeed(setShutterSpeed);
+            result = mRemoteApi.getAvailableShutterSpeed();
+            Log.i(TAG, result.toString());
+            result = mRemoteApi.getSupportedShutterSpeed();
+            Log.i(TAG, result.toString());
+            Log.i(TAG, SonyCameraControllerUtil.formatStringShutterSpeed(setShutterSpeed));
+            result = mRemoteApi.setShutterSpeed(SonyCameraControllerUtil.formatStringShutterSpeed(setShutterSpeed));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -388,8 +394,9 @@ public class CameraController implements BracketCameraControllerAPI {
         String resultString = null;
         StringBuilder stringBuilder = new StringBuilder();
         if(result != null){
+            Log.i(TAG, result.toString());
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
-            if(resultString != null && resultString.contains("postview")){
+            if(resultString != null && (resultString.contains("postview") || resultString.contains(".JPG"))){
 
                 if(prefix.equals(BracketCameraControllerAPI.AWAIT_TAKE_PICTURE)){
                     photoCompleteFlag = true;
@@ -416,7 +423,14 @@ public class CameraController implements BracketCameraControllerAPI {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }  else {
+            }else if(resultString.contains("40400")) {
+                try {
+                    updateCameraState();
+                    takeSinglePhoto(globalShutterSpeed);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else {
                 if((prefix.equals(BracketCameraControllerAPI.SUPPORTED_ISO_RESULT)
                         || prefix.equals(BracketCameraControllerAPI.SUPPORTED_SHUTTER_SPEED_RESULT)
                         || prefix.equals(BracketCameraControllerAPI.SUPPORTED_FSTOP_RESULT))
