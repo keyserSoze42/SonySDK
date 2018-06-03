@@ -322,11 +322,6 @@ public class CameraController implements BracketCameraControllerAPI {
             if(shutterSpeedInt > 30){
                 setShutterSpeed = "BULB";
             }
-            result = mRemoteApi.getAvailableShutterSpeed();
-            Log.i(TAG, result.toString());
-            result = mRemoteApi.getSupportedShutterSpeed();
-            Log.i(TAG, result.toString());
-            Log.i(TAG, SonyCameraControllerUtil.formatStringShutterSpeed(setShutterSpeed));
             result = mRemoteApi.setShutterSpeed(SonyCameraControllerUtil.formatStringShutterSpeed(setShutterSpeed));
         } catch (IOException e) {
             e.printStackTrace();
@@ -394,7 +389,6 @@ public class CameraController implements BracketCameraControllerAPI {
         String resultString = null;
         StringBuilder stringBuilder = new StringBuilder();
         if(result != null){
-            Log.i(TAG, result.toString());
             resultString = SonyCameraControllerUtil.parseSingleResult(result);
             if(resultString != null && (resultString.contains("postview") || resultString.contains(".JPG"))){
 

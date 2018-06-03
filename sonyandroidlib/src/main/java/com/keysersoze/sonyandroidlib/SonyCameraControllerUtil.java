@@ -39,7 +39,6 @@ public class SonyCameraControllerUtil {
         for (int i = 0; i < arr.length(); i++)
         {
             try {
-                Log.i(TAG,  arr.getJSONObject(i).toString());
                 cameraStatus = arr.getJSONObject(i).getString("cameraStatus");
                 break;
             } catch (JSONException e) {
